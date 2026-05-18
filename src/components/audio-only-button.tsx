@@ -1,5 +1,8 @@
+import { SpeakerHighIcon, SpeakerSlashIcon } from '@phosphor-icons/react'
+
 import { cn } from '../lib/cn'
 import { audioOnlyEnabled } from '../lib/store'
+import { Button } from './ui/button'
 
 /**
  * Audio-only toggle, rendered as a sibling of `弹幕助手` in the bottom-
@@ -26,30 +29,31 @@ import { audioOnlyEnabled } from '../lib/store'
  */
 export function AudioOnlyButton() {
   const active = audioOnlyEnabled.value
+  const Icon = active ? SpeakerHighIcon : SpeakerSlashIcon
   const toggle = () => {
     audioOnlyEnabled.value = !audioOnlyEnabled.value
   }
 
   return (
-    <button
+    <Button
       type='button'
       id='chatterbox-lite-audio-only-toggle'
+      variant='secondary'
       onClick={toggle}
       title={active ? '点击恢复视频流' : '点击切换为仅音频模式（节省 ~90% 带宽）'}
-      class={cn(
-        'appearance-none border-none outline-none',
-        'cursor-pointer select-none',
-        'rounded px-2 py-1 text-white',
-        'transition-[background-color,scale] duration-100 ease-out active:scale-[0.96]',
+      className={cn(
+        'px-2 py-1 text-white',
+        'active:scale-[0.96]',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
         '[@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-3',
         // Pink in audio-only mode (matches bilibili's brand accent and
         // the icon-fill we use elsewhere); muted gray otherwise so the
         // primary `弹幕助手` button keeps visual priority.
-        active ? 'bg-[#FF6699]' : 'bg-ga6'
+        active ? 'border-[#FF6699] bg-[#FF6699]' : 'border-ga6 bg-ga6'
       )}
     >
+      <Icon size={14} weight='bold' aria-hidden='true' />
       {active ? '恢复视频' : '仅音频'}
-    </button>
+    </Button>
   )
 }

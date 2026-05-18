@@ -1,3 +1,4 @@
+import { PushPinIcon, SmileyIcon } from '@phosphor-icons/react'
 import { useSignal } from '@preact/signals'
 
 import type { BilibiliEmoticon } from '../types'
@@ -100,7 +101,7 @@ export function EmoteSelector() {
             isPinned ? 'border-brand text-brand' : 'text-ga5'
           )}
         >
-          ★
+          <PushPinIcon size={11} weight={isPinned ? 'fill' : 'regular'} aria-hidden='true' />
         </button>
         <Button
           type='button'
@@ -139,6 +140,7 @@ export function EmoteSelector() {
     <Popover open={open.value} onOpenChange={handleOpenChange}>
       <PopoverTrigger>
         <Button variant={open.value ? 'default' : 'outline'} size='sm' title='表情'>
+          <SmileyIcon weight='bold' aria-hidden='true' />
           表情
         </Button>
       </PopoverTrigger>

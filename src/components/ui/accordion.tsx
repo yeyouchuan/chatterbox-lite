@@ -1,3 +1,4 @@
+import { CaretDownIcon } from '@phosphor-icons/react'
 import type { HTMLAttributes } from 'preact'
 
 import { cn } from '../../lib/cn'
@@ -72,7 +73,10 @@ export function AccordionTrigger({ className, children, ...props }: AccordionTri
       class={cn(
         'flex items-center justify-between gap-2',
         'cursor-pointer select-none font-bold',
-        'rounded-sm bg-ga1 px-1 py-0.5',
+        'rounded-md bg-ga1 px-1 py-0.5',
+        'outline-none transition-[background-color,outline-color,box-shadow] duration-150 ease-out',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
+        'focus-visible:ring-2 focus-visible:ring-brand/15',
         // Hide the disclosure triangle two ways: `list-style: none` for browsers
         // that respect it, and the WebKit-specific pseudo-element for Safari.
         'list-none',
@@ -82,21 +86,12 @@ export function AccordionTrigger({ className, children, ...props }: AccordionTri
       {...props}
     >
       <span class='min-w-0 flex-1'>{children}</span>
-      <svg
-        class={'shrink-0 transition-transform [details[open]_&]:rotate-180'}
-        xmlns='http://www.w3.org/2000/svg'
-        width='12'
-        height='12'
-        viewBox='0 0 24 24'
-        fill='none'
-        stroke='currentColor'
-        stroke-width='3'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+      <CaretDownIcon
+        size={13}
+        weight='bold'
         aria-hidden='true'
-      >
-        <path d='m6 9 6 6 6-6' />
-      </svg>
+        className='shrink-0 transition-transform [details[open]_&]:rotate-180'
+      />
     </summary>
   )
 }

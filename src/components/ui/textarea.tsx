@@ -25,14 +25,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       class={cn(
         'box-border w-full',
         'px-1 py-0.5',
-        'rounded border border-ga4 border-solid',
+        'rounded-md border border-ga4 border-solid',
         'bg-bg1 text-inherit',
         'leading-[1.4] outline-none',
+        'placeholder:text-ga5',
         'min-h-10 resize-y',
         'cursor-text disabled:cursor-not-allowed disabled:opacity-60',
-        'transition-[border-color,outline-color,box-shadow] duration-100 ease-out',
+        'shadow-[inset_0_1px_0_rgba(0,0,0,.03)]',
+        'transition-[border-color,outline-color,box-shadow] duration-150 ease-out',
         'focus:border-brand',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
+        'focus-visible:ring-2 focus-visible:ring-brand/15',
         className
       )}
       {...props}

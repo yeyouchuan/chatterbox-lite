@@ -18,43 +18,36 @@ export interface ButtonProps extends ButtonBase {
   className?: string
 }
 
-// Base classes shared by every variant/size. The hover/active brightness
-// previously lived in styles.ts as `:not(:disabled):hover { filter: ... }`;
-// we now express that via the arbitrary-selector variant so disabled
-// buttons stay un-darkened automatically.
 const BASE_CLASS = [
   'inline-flex items-center justify-center',
-  'gap-1 rounded',
+  'gap-1.5 rounded-md',
   'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
-  'leading-[1.2]',
+  'font-medium leading-[1.2]',
   'select-none whitespace-nowrap box-border',
-  'transition-[background-color,border-color,color,filter,outline-color,scale,box-shadow] duration-100 ease-out',
+  'outline-none',
+  '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-3.5',
+  'transition-[background-color,border-color,color,filter,outline-color,scale,box-shadow] duration-150 ease-out',
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
+  'focus-visible:ring-2 focus-visible:ring-brand/20',
   '[&:not(:disabled):hover]:brightness-[.96]',
   '[&:not(:disabled):active]:brightness-[.9]',
   'active:scale-[0.96]',
 ].join(' ')
 
 const SIZE_CLASS: Record<ButtonSize, string> = {
-  sm: 'px-1.5 py-px min-h-[18px] [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-3',
-  default: 'px-2.5 py-1 min-h-6 [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-3',
-  lg: 'px-3.5 py-1.5 min-h-7 [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-4',
+  sm: 'px-1.5 py-px min-h-[18px] text-[12px] [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-3',
+  default: 'px-2.5 py-1 min-h-6 text-[13px] [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-3',
+  lg: 'px-3.5 py-1.5 min-h-7 text-[13px] [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-4',
   icon: 'p-0 w-6 h-6 [@media(pointer:coarse)]:size-11',
 }
 
-// All variants set `border` + `border-solid` explicitly because preflight
-// is disabled — without the style declaration the width-only `border`
-// utility wouldn't render anything.
 const VARIANT_CLASS: Record<ButtonVariant, string> = {
-  default: 'bg-brand text-white border border-solid border-brand',
-  secondary: 'bg-ga1s text-inherit border border-solid border-ga4',
+  default: 'border border-brand border-solid bg-brand text-white shadow-[0_1px_0_rgba(0,0,0,.06)]',
+  secondary: 'border border-ga3 border-solid bg-ga1s text-inherit shadow-[0_1px_0_rgba(0,0,0,.04)]',
   destructive: 'bg-transparent text-danger border border-solid border-danger',
-  outline: 'bg-transparent text-inherit border border-solid border-ga4',
+  outline: 'border border-ga4 border-solid bg-bg1 text-inherit shadow-[0_1px_0_rgba(0,0,0,.04)]',
   ghost: 'bg-transparent text-inherit border border-solid border-transparent',
-  // `p-0` / `min-h-[auto]` win over the size class's `px-2.5 py-1
-  // min-h-6` because cn() (tailwind-merge) recognises `p` as superseding
-  // `px`/`py`, and `min-h` as a single group where last wins.
-  link: 'bg-transparent text-link border border-solid border-transparent underline underline-offset-2 p-0 min-h-[auto]',
+  link: 'border border-transparent border-solid bg-transparent p-0 text-link underline underline-offset-2 min-h-[auto]',
 }
 
 export function Button({

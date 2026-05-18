@@ -1,3 +1,5 @@
+import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
+
 import {
   blockedRetryEnabled,
   danmakuDirectEnabled,
@@ -47,6 +49,7 @@ export function SettingsPanel() {
             dialogTop.value = null
           }}
         >
+          <ArrowCounterClockwiseIcon weight='bold' aria-hidden='true' />
           重置位置
         </Button>
       </div>

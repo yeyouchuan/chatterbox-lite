@@ -1,3 +1,4 @@
+import { CircleNotchIcon, PaperPlaneTiltIcon } from '@phosphor-icons/react'
 import { useSignal } from '@preact/signals'
 import { useRef } from 'preact/hooks'
 
@@ -178,7 +179,17 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
           <span class='truncate text-[11px] text-[var(--Ga7,#5f6670)]'>词库会在发送前替换</span>
         </div>
         <Button size='sm' disabled={sending.value || !fasongText.value.trim()} onClick={() => void sendMessage()}>
-          {sending.value ? '发送中…' : '发送'}
+          {sending.value ? (
+            <>
+              <CircleNotchIcon className='animate-spin' aria-hidden='true' />
+              发送中…
+            </>
+          ) : (
+            <>
+              <PaperPlaneTiltIcon weight='bold' aria-hidden='true' />
+              发送
+            </>
+          )}
         </Button>
       </div>
     </div>

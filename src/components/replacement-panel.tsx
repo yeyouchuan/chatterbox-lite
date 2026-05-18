@@ -1,3 +1,4 @@
+import { ArrowsClockwiseIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { useSignal } from '@preact/signals'
 import { useEffect } from 'preact/hooks'
 
@@ -67,13 +68,16 @@ function RuleList({
           <span class='min-w-0 flex-1 truncate text-[12px]'>
             {rule.from || '(空)'} → {rule.to || '(空)'}
           </span>
-          <button
+          <Button
             type='button'
-            class='m-0 border-none bg-transparent p-0 text-[12px] text-danger hover:underline'
+            variant='ghost'
+            size='sm'
+            className='h-5 px-1 text-danger'
             onClick={() => onRemove(index)}
           >
+            <TrashIcon weight='bold' aria-hidden='true' />
             删除
-          </button>
+          </Button>
         </div>
       ))}
     </div>
@@ -195,6 +199,7 @@ export function ReplacementPanel() {
         <div class='mb-2 flex items-center justify-between gap-2'>
           <div class='min-w-0 truncate text-[11px] text-ga6'>{status.value}</div>
           <Button variant='outline' size='sm' disabled={syncing.value} onClick={() => void syncRemote()}>
+            <ArrowsClockwiseIcon className={syncing.value ? 'animate-spin' : undefined} aria-hidden='true' />
             {syncing.value ? '同步中…' : '同步云端'}
           </Button>
         </div>
@@ -220,7 +225,7 @@ export function ReplacementPanel() {
                 }}
               />
               <Button size='sm' onClick={addGlobalRule}>
-                加
+                <PlusIcon weight='bold' aria-hidden='true' />加
               </Button>
             </div>
           </div>
@@ -248,7 +253,7 @@ export function ReplacementPanel() {
                 }}
               />
               <Button size='sm' onClick={addRoomRule}>
-                加
+                <PlusIcon weight='bold' aria-hidden='true' />加
               </Button>
             </div>
           </div>

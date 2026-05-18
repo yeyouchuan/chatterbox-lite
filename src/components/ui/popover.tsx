@@ -222,10 +222,10 @@ export function PopoverContent({
         portal ? 'fixed z-2147483647' : 'absolute z-50',
         !portal && sideClass,
         !portal && alignClass,
-        'rounded border border-ga3 border-solid',
-        'bg-bg1',
-        'shadow-[0_4px_12px_rgba(0,0,0,.15)]',
-        'pointer-events-auto overflow-visible',
+        'rounded-md border border-ga3 border-solid',
+        'bg-bg1 text-inherit',
+        'shadow-[0_12px_28px_rgba(15,23,42,.18)]',
+        'pointer-events-auto overflow-visible outline-none',
         className
       )}
     >

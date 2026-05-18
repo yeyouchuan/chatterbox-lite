@@ -1,3 +1,4 @@
+import { GearSixIcon, XIcon } from '@phosphor-icons/react'
 import type { TargetedPointerEvent } from 'preact'
 import { useEffect, useRef, useState } from 'preact/hooks'
 
@@ -156,7 +157,7 @@ export function Configurator() {
                     e.stopPropagation()
                   }}
                 >
-                  ⚙
+                  <GearSixIcon size={15} weight='bold' aria-hidden='true' />
                 </Button>
               </PopoverTrigger>
               <PopoverContent side='bottom' align='end' portal className='w-[230px]'>
@@ -180,7 +181,7 @@ export function Configurator() {
                 dialogOpen.value = false
               }}
             >
-              ×
+              <XIcon size={15} weight='bold' aria-hidden='true' />
             </Button>
           </div>
         </div>
