@@ -13,6 +13,8 @@ import { cachedEmoticonPackages, pinnedEmoticonUniques } from '../lib/store'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
+const EMOTE_GRID_CLASS = 'grid grid-cols-[repeat(auto-fill,minmax(64px,1fr))] gap-x-1.5 gap-y-2'
+
 export function EmoteSelector() {
   const open = useSignal(false)
   const copiedId = useSignal<string | null>(null)
@@ -84,7 +86,7 @@ export function EmoteSelector() {
     const lockText = emo.unlock_show_text?.trim() || ''
 
     return (
-      <div key={unique} class='relative flex w-15 flex-col items-center gap-0.5'>
+      <div key={unique} class='relative flex min-w-0 flex-col items-center gap-0.5'>
         <button
           type='button'
           title={isPinned ? '取消置顶' : '置顶到常用'}
@@ -108,9 +110,9 @@ export function EmoteSelector() {
           variant='outline'
           title={`${emo.emoji}\n点击发送: ${unique}`}
           onClick={() => void handleSend(unique)}
-          className={cn('relative p-0.5', isLocked && 'opacity-60')}
+          className={cn('relative size-16 p-0.5', isLocked && 'opacity-60')}
         >
-          <img src={emo.url} alt={emo.emoji} class='size-15 object-contain' loading='lazy' />
+          <img src={emo.url} alt={emo.emoji} class='size-full object-contain' loading='lazy' />
           {isLocked && (
             <span
               class='pointer-events-none absolute top-px right-px rounded-sm p-0.5 text-[9px] text-white leading-none'
@@ -161,7 +163,7 @@ export function EmoteSelector() {
                     常用置顶
                     <span class='ml-2 font-normal'>({pinnedEmoticons.length})</span>
                   </div>
-                  <div class='flex flex-wrap gap-1'>{pinnedEmoticons.map(renderEmote)}</div>
+                  <div class={EMOTE_GRID_CLASS}>{pinnedEmoticons.map(renderEmote)}</div>
                 </div>
               )}
 
@@ -171,7 +173,7 @@ export function EmoteSelector() {
                     {pkg.pkg_name}
                     <span class='ml-2 font-normal'>({pkg.emoticons.length})</span>
                   </div>
-                  <div class='flex flex-wrap gap-1'>{pkg.emoticons.map(renderEmote)}</div>
+                  <div class={EMOTE_GRID_CLASS}>{pkg.emoticons.map(renderEmote)}</div>
                 </div>
               ))}
             </>
