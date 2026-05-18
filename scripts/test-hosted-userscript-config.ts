@@ -17,6 +17,7 @@ assert(
   releaseWorkflow.includes('branches: [main, master]'),
   'GitHub Pages workflow should run on both common default branches'
 )
+assert(releaseWorkflow.includes('workflow_dispatch:'), 'GitHub Pages workflow should support manual deploys')
 assert(
   releaseWorkflow.includes(githubPagesBaseUrl),
   'GitHub Pages workflow should publish builds with a stable hosted userscript URL'
