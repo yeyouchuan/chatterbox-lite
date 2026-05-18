@@ -132,7 +132,7 @@ export function EmoteSelector() {
           表情
         </Button>
       </PopoverTrigger>
-      <PopoverContent side='top' align='start' portal className='w-[min(460px,calc(100vw-24px))]'>
+      <PopoverContent side='top' align='start' portal className='w-[calc(var(--chatterbox-lite-dialog-width)-24px)]'>
         <div
           class='overflow-y-auto p-2'
           style={{ maxHeight: 'min(360px, var(--chatterbox-lite-popover-max-height, 44vh))' }}
