@@ -1,5 +1,6 @@
 import {
   blockedRetryEnabled,
+  danmakuDirectEnabled,
   dialogLeft,
   dialogTop,
   showAudioOnlyButton,
@@ -83,6 +84,13 @@ export function SettingsPanel() {
           checked={blockedRetryEnabled.value}
           onChange={v => {
             blockedRetryEnabled.value = v
+          }}
+        />
+        <SettingCheckbox
+          label='显示弹幕 +1 / 复制'
+          checked={danmakuDirectEnabled.value}
+          onChange={v => {
+            danmakuDirectEnabled.value = v
           }}
         />
       </div>

@@ -2,6 +2,7 @@ import { useEffect } from 'preact/hooks'
 
 import { ensureRoomId, fetchEmoticons } from '../lib/api'
 import { startAudioOnly, stopAudioOnly } from '../lib/audio-only'
+import { startDanmakuDirect, stopDanmakuDirect } from '../lib/danmaku-direct'
 import { appendLog } from '../lib/log'
 import { Configurator } from './configurator'
 import { ToggleButton } from './toggle-button'
@@ -19,7 +20,11 @@ export function App() {
     })()
 
     startAudioOnly()
-    return () => stopAudioOnly()
+    startDanmakuDirect()
+    return () => {
+      stopAudioOnly()
+      stopDanmakuDirect()
+    }
   }, [])
 
   return (

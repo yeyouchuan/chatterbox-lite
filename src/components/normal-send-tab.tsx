@@ -13,8 +13,9 @@ import {
 import { focusTextareaAfterSend } from '../lib/focus-after-send'
 import { appendLog } from '../lib/log'
 import { applyReplacements } from '../lib/replacement'
+import { addSendHistoryEntry, navigateSendHistory, type SendHistoryState } from '../lib/send-history'
 import { enqueueDanmaku, SendPriority } from '../lib/send-queue'
-import { blockedRetryEnabled, fasongText, maxLength, msgSendInterval } from '../lib/store'
+import { blockedRetryEnabled, fasongText, maxLength, msgSendInterval, sendHistory } from '../lib/store'
 import { processMessages } from '../lib/utils'
 import { EmoteSelector } from './emote-selector'
 import { Button } from './ui/button'
@@ -22,6 +23,7 @@ import { Textarea } from './ui/textarea'
 
 export function NormalSendTab() {
   const sending = useSignal(false)
+  const historyState = useSignal<SendHistoryState>({ index: -1, draft: '' })
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const sendMessage = async () => {
@@ -50,6 +52,8 @@ export function NormalSendTab() {
     const isEmote = isEmoticonUnique(originalMessage)
     const processedMessage = isEmote ? originalMessage : applyReplacements(originalMessage)
     fasongText.value = ''
+    historyState.value = { index: -1, draft: '' }
+    sendHistory.value = addSendHistoryEntry(sendHistory.value, originalMessage)
     sending.value = true
 
     try {
@@ -106,8 +110,22 @@ export function NormalSendTab() {
           disabled={sending.value}
           onInput={e => {
             fasongText.value = e.currentTarget.value
+            historyState.value = { index: -1, draft: '' }
           }}
           onKeyDown={e => {
+            if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !e.isComposing && sendHistory.value.length > 0) {
+              e.preventDefault()
+              const next = navigateSendHistory(
+                sendHistory.value,
+                fasongText.value,
+                historyState.value,
+                e.key === 'ArrowUp' ? 'older' : 'newer'
+              )
+              fasongText.value = next.text
+              historyState.value = next.state
+              return
+            }
+
             if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
               e.preventDefault()
               void sendMessage()
