@@ -27,16 +27,18 @@ assert(!inputOnlyBlock.includes('<Button'), 'input-only mode should not render a
 assert(!inputOnlyBlock.includes('词库会在发送前替换'), 'input-only mode should not render helper copy')
 assert(!inputOnlyBlock.includes('发送中'), 'input-only mode should not render send-button status text')
 
-assert(configuratorSource.includes('const inputOnly ='), 'configurator should detect the strict input-only mode')
 assert(
-  configuratorSource.includes('showNormalSendPanel.value') &&
-    configuratorSource.includes('!showReplacementPanel.value') &&
-    configuratorSource.includes('!showLogPanel.value'),
-  'input-only mode should mean send panel only, with replacement and log panels hidden'
+  !configuratorSource.includes('showNormalSendPanel.value && !showReplacementPanel.value && !showLogPanel.value'),
+  'main dialog should not collapse into input-only mode when only the send panel is enabled'
 )
 assert(
-  !configuratorSource.match(/inputOnly[\s\S]{0,240}Chatterbox Lite/),
-  'input-only mode should not render the title row'
+  !configuratorSource.includes('<NormalSendTab inputOnly />'),
+  'main dialog should not render the input-only send tab'
+)
+assert(configuratorSource.includes('Chatterbox Lite'), 'main dialog should keep the title row')
+assert(
+  configuratorSource.includes('<SettingsPanel />'),
+  'main dialog should keep the settings entry so hidden panels can be restored'
 )
 
 const sendStart = source.indexOf('const isEmote = isEmoticonUnique(originalMessage)')
