@@ -17,7 +17,7 @@ export function Input({ type = 'text', disabled, className, ...props }: InputPro
       type={type}
       disabled={disabled}
       class={cn(
-        'box-border',
+        'box-border w-full min-w-0',
         'px-1 py-px',
         'rounded border border-ga4 border-solid',
         'bg-bg1 text-inherit',

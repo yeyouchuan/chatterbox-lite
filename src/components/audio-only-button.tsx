@@ -33,7 +33,7 @@ export function AudioOnlyButton() {
   return (
     <button
       type='button'
-      id='laplace-audio-only-toggle'
+      id='chatterbox-lite-audio-only-toggle'
       onClick={toggle}
       title={active ? '点击恢复视频流' : '点击切换为仅音频模式（节省 ~90% 带宽）'}
       class={cn(

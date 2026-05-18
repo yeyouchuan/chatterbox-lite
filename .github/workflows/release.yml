@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [main, master]
 
 permissions:
   contents: read
@@ -27,6 +27,8 @@ jobs:
       - run: bun install --frozen-lockfile
 
       - run: bun run build
+        env:
+          USERSCRIPT_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
 
       - uses: actions/configure-pages@v6
 

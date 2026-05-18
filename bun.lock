@@ -6,16 +6,13 @@
       "name": "laplace-userscripts",
       "dependencies": {
         "@preact/signals": "^2.9.0",
-        "@tabler/icons-preact": "^3.44.0",
         "clsx": "^2.1.1",
         "preact": "^10.29.2",
         "tailwind-merge": "^3.6.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.4.15",
-        "@laplace.live/internal": "^1.3.15",
         "@preact/preset-vite": "^2.10.5",
-        "@soniox/speech-to-text-web": "^1.4.0",
         "@tailwindcss/vite": "^4.3.0",
         "@types/bun": "^1.3.14",
         "mpegts.js": "1.8.0",
@@ -149,8 +146,6 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@laplace.live/internal": ["@laplace.live/internal@1.3.15", "", { "peerDependencies": { "typescript": "^5.9.3" } }, "sha512-jI+d5wngY6mmYtsJWCFXn5ebVzjashI7s9zWimycBsUd7Wo3EG4dcGq6JNAzwhhvpPxQ101SwWymnoZylcNmhg=="],
-
     "@preact/preset-vite": ["@preact/preset-vite@2.10.5", "", { "dependencies": { "@babel/plugin-transform-react-jsx": "^7.27.1", "@babel/plugin-transform-react-jsx-development": "^7.27.1", "@prefresh/vite": "^2.4.11", "@rollup/pluginutils": "^5.0.0", "babel-plugin-transform-hook-names": "^1.0.2", "debug": "^4.4.3", "magic-string": "^0.30.21", "picocolors": "^1.1.1", "vite-prerender-plugin": "^0.5.8", "zimmerframe": "^1.1.4" }, "peerDependencies": { "@babel/core": "7.x", "vite": "2.x || 3.x || 4.x || 5.x || 6.x || 7.x || 8.x" } }, "sha512-p0vJpxiVO7KWWazWny3LUZ+saXyZKWv6Ju0bYMWNJRp2YveufRPgSUB1C4MTqGJfz07EehMgfN+AJNwQy+w6Iw=="],
 
     "@preact/signals": ["@preact/signals@2.9.0", "", { "dependencies": { "@preact/signals-core": "^1.14.0" }, "peerDependencies": { "preact": ">= 10.25.0 || >=11.0.0-0" } }, "sha512-hYrY0KyUqkDgOl1qba/JGn6y81pXnurn21PMaxfcMwdncdZ3M/oVdmpTvEnsGjh48dIwDVc7bjWHqIsngSjYug=="],
@@ -216,12 +211,6 @@
     "@rollup/rollup-win32-x64-gnu": ["@rollup/rollup-win32-x64-gnu@4.59.0", "", { "os": "win32", "cpu": "x64" }, "sha512-laBkYlSS1n2L8fSo1thDNGrCTQMmxjYY5G0WFWjFFYZkKPjsMBsgJfGf4TLxXrF6RyhI60L8TMOjBMvXiTcxeA=="],
 
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.59.0", "", { "os": "win32", "cpu": "x64" }, "sha512-2HRCml6OztYXyJXAvdDXPKcawukWY2GpR5/nxKp4iBgiO3wcoEGkAaqctIbZcNB6KlUQBIqt8VYkNSj2397EfA=="],
-
-    "@soniox/speech-to-text-web": ["@soniox/speech-to-text-web@1.4.0", "", {}, "sha512-ZtwL3yQsPEn7Cf3uYYSa6c4PnD19ohv7/wpZweLfJlNvI5NwoCeQEvENxIMFXGEatG65GvisVkPTl/1MV2WswA=="],
-
-    "@tabler/icons": ["@tabler/icons@3.44.0", "", {}, "sha512-Wn0AOZG9sg0L+bjfMqq4eNhC6pQjIrk94LvvWYNYkY8KH8wC3YILRzQlrnVJc4FUeMxH/AK97QsYCX35H3LndA=="],
-
-    "@tabler/icons-preact": ["@tabler/icons-preact@3.44.0", "", { "dependencies": { "@tabler/icons": "3.44.0" }, "peerDependencies": { "preact": "^10.5.13" } }, "sha512-P0i7HNqwANPOJwhuskPkDZ5iYmPGfpqCHBOaCBQzu681sWcz2ZNJqxY/H+zqJ6bUGukBUbNJgUF9ayrBN2FI9A=="],
 
     "@tailwindcss/node": ["@tailwindcss/node@4.3.0", "", { "dependencies": { "@jridgewell/remapping": "^2.3.5", "enhanced-resolve": "^5.21.0", "jiti": "^2.6.1", "lightningcss": "1.32.0", "magic-string": "^0.30.21", "source-map-js": "^1.2.1", "tailwindcss": "4.3.0" } }, "sha512-aFb4gUhFOgdh9AXo4IzBEOzBkkAxm9VigwDJnMIYv3lcfXCJVesNfbEaBl4BNgVRyid92AmdviqwBUBRKSeY3g=="],
 
@@ -461,7 +450,7 @@
 
     "vite-prerender-plugin": ["vite-prerender-plugin@0.5.13", "", { "dependencies": { "kolorist": "^1.8.0", "magic-string": "0.x >= 0.26.0", "node-html-parser": "^6.1.12", "simple-code-frame": "^1.3.0", "source-map": "^0.7.4", "stack-trace": "^1.0.0-pre2" }, "peerDependencies": { "vite": "5.x || 6.x || 7.x || 8.x" } }, "sha512-IKSpYkzDBsKAxa05naRbj7GvNVMSdww/Z/E89oO3xndz+gWnOBOKOAbEXv7qDhktY/j3vHgJmoV1pPzqU2tx9g=="],
 
-    "webworkify-webpack": ["webworkify-webpack@github:xqq/webworkify-webpack#24d1e71", {}, "xqq-webworkify-webpack-24d1e71", "sha512-G1LdOhY/Ute4RrohjqCH/KsME92eCS5jE9MuiXO2e6oKg1EkVbHf6YUvFsp2C/EQfLJc88oafJOqdZZVhNkd5A=="],
+    "webworkify-webpack": ["webworkify-webpack@github:xqq/webworkify-webpack#24d1e71", {}, "xqq-webworkify-webpack-24d1e71"],
 
     "which": ["which@2.0.2", "", { "dependencies": { "isexe": "^2.0.0" }, "bin": { "node-which": "./bin/node-which" } }, "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA=="],
 

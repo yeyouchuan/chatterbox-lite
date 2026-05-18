@@ -3,27 +3,31 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import monkey from 'vite-plugin-monkey'
 
-// https://vitejs.dev/config/
+const userscriptBaseUrl = process.env.USERSCRIPT_BASE_URL?.replace(/\/$/, '')
+const hostedUserscriptUrls = userscriptBaseUrl
+  ? {
+      downloadURL: `${userscriptBaseUrl}/chatterbox-lite.user.js`,
+      updateURL: `${userscriptBaseUrl}/chatterbox-lite.meta.js`,
+    }
+  : {}
+
 export default defineConfig({
   plugins: [
-    // Tailwind v4 must run before the framework plugin so it can scan the
-    // JSX sources before they're transformed to plain JS. The emitted CSS
-    // is referenced via `import './styles.css'` in the entry and inlined
-    // into the userscript by vite-plugin-monkey via GM_addStyle.
     tailwindcss(),
     preact(),
     monkey({
       entry: 'src/main.tsx',
       userscript: {
-        name: 'LAPLACE 弹幕助手 - 哔哩哔哩直播间独轮车、弹幕发送',
+        name: 'Chatterbox Lite',
         namespace: 'https://greasyfork.org/users/1524935',
         description:
-          '这是 bilibili 直播间简易版独轮车，基于 quiet/thusiant cmd 版本 https://greasyfork.org/scripts/421507 继续维护而来',
-        author: 'laplace-live',
+          'A slim Bilibili Live danmaku helper with audio-only mode, keyword replacement, and manual sending.',
+        author: 'laplace-live; Chatterbox Lite fork',
         license: 'AGPL-3.0',
         icon: 'https://laplace.live/favicon.ico',
-        match: ['*://live.bilibili.com/*', '*://space.bilibili.com/*'],
+        match: ['*://live.bilibili.com/*'],
         'run-at': 'document-start',
+        ...hostedUserscriptUrls,
       },
       build: {
         metaFileName: true,

@@ -1,14 +1,10 @@
 /**
  * Shared lazy `<script>` loader for CDN-hosted UMD bundles.
  *
- * Why this lives in its own module: two unrelated features
- * (audio-only via mpegts.js, speech-to-text via Soniox) load CDN
- * bundles with the exact same shape — probe the page for a global,
- * inject a `<script>` tag if missing, share the in-flight promise so
- * concurrent callers don't race two parallel fetches, evict the
- * cache on error so a retry can re-fetch. Centralising here means
- * any future lazy CDN dep gets the same battle-tested behaviour for
- * free, and we don't have N copies of the dance drifting apart.
+ * Shared lazy loader for CDN-hosted UMD bundles. It probes the page for a
+ * global, injects a `<script>` tag if missing, shares the in-flight promise
+ * for concurrent callers, and evicts the cache on error so a retry can
+ * re-fetch.
  *
  * Why we deliberately bypass the bundler's `externalGlobals` /
  * Tampermonkey `@require` path for these libs: that path fetches

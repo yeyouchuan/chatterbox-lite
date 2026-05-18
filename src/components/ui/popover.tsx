@@ -1,8 +1,10 @@
-import type { ComponentChildren, VNode } from 'preact'
+import type { ComponentChildren, JSX, VNode } from 'preact'
 import { cloneElement, createContext, isValidElement } from 'preact'
-import { useContext, useEffect, useRef } from 'preact/hooks'
+import { createPortal } from 'preact/compat'
+import { useContext, useEffect, useRef, useState } from 'preact/hooks'
 
 import { cn } from '../../lib/cn'
+import { getFixedPopoverStyle } from '../../lib/popover-position'
 
 // === Popover ============================================================
 //
@@ -26,6 +28,7 @@ interface PopoverContextValue {
   // the trigger to toggle and clicking content rows both stay open
   // unless they explicitly close themselves.
   wrapperRef: { current: HTMLDivElement | null }
+  contentRef: { current: HTMLDivElement | null }
 }
 
 const PopoverContext = createContext<PopoverContextValue | null>(null)
@@ -45,8 +48,9 @@ export interface PopoverProps {
 
 export function Popover({ open, onOpenChange, className, children }: PopoverProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
   return (
-    <PopoverContext.Provider value={{ open, setOpen: onOpenChange, wrapperRef }}>
+    <PopoverContext.Provider value={{ open, setOpen: onOpenChange, wrapperRef, contentRef }}>
       {/* `relative` establishes the positioning context for
           PopoverContent's absolute layout AND the bounding box for the
           outside-click test. `inline-block` keeps the wrapper inline so
@@ -106,10 +110,52 @@ export interface PopoverContentProps {
   /** How the popover is aligned along the horizontal axis. */
   align?: PopoverAlign
   className?: string
+  portal?: boolean
 }
 
-export function PopoverContent({ children, side = 'bottom', align = 'start', className }: PopoverContentProps) {
-  const { open, setOpen, wrapperRef } = usePopover()
+function getPortalRoot(wrapper: HTMLDivElement | null): Element | null {
+  if (!wrapper) return null
+  const root = wrapper.getRootNode()
+  if (root instanceof ShadowRoot) {
+    const existing = root.getElementById('chatterbox-lite-portal-root')
+    if (existing) return existing
+
+    const created = document.createElement('div')
+    created.id = 'chatterbox-lite-portal-root'
+    root.appendChild(created)
+    return created
+  }
+  return wrapper.ownerDocument.body
+}
+
+function getCurrentFixedStyle(
+  wrapper: HTMLDivElement | null,
+  side: PopoverSide,
+  align: PopoverAlign
+): JSX.CSSProperties | undefined {
+  if (!wrapper) return undefined
+  const fixedStyle = getFixedPopoverStyle({
+    triggerRect: wrapper.getBoundingClientRect(),
+    side,
+    align,
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
+  })
+  return {
+    ...fixedStyle,
+    '--chatterbox-lite-popover-max-height': fixedStyle.maxHeight,
+  } as JSX.CSSProperties
+}
+
+export function PopoverContent({
+  children,
+  side = 'bottom',
+  align = 'start',
+  className,
+  portal = false,
+}: PopoverContentProps) {
+  const { open, setOpen, wrapperRef, contentRef } = usePopover()
+  const [fixedStyle, setFixedStyle] = useState<JSX.CSSProperties | undefined>(undefined)
 
   // mousedown (not click) so a gesture that ends in a drag-select doesn't
   // swallow the close — matches the Combobox close behaviour for
@@ -121,9 +167,11 @@ export function PopoverContent({ children, side = 'bottom', align = 'start', cla
       // retargeted to the shadow host on a document-level listener and
       // would incorrectly fire "outside" for clicks inside the popover.
       const wrapper = wrapperRef.current
-      if (wrapper && !e.composedPath().includes(wrapper)) {
-        setOpen(false)
-      }
+      const content = contentRef.current
+      const path = e.composedPath()
+      if (wrapper && path.includes(wrapper)) return
+      if (content && path.includes(content)) return
+      setOpen(false)
     }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false)
@@ -136,6 +184,25 @@ export function PopoverContent({ children, side = 'bottom', align = 'start', cla
     }
   }, [open])
 
+  useEffect(() => {
+    if (!open || !portal) {
+      setFixedStyle(undefined)
+      return
+    }
+
+    const update = () => {
+      setFixedStyle(getCurrentFixedStyle(wrapperRef.current, side, align))
+    }
+    update()
+
+    window.addEventListener('resize', update)
+    window.addEventListener('scroll', update, true)
+    return () => {
+      window.removeEventListener('resize', update)
+      window.removeEventListener('scroll', update, true)
+    }
+  }, [open, portal, side, align])
+
   if (!open) return null
 
   // top:    popover sits ABOVE the trigger (its bottom edge meets the trigger's top).
@@ -146,21 +213,28 @@ export function PopoverContent({ children, side = 'bottom', align = 'start', cla
   // center: popover is centered horizontally on the trigger.
   const alignClass = align === 'end' ? 'right-0' : align === 'center' ? 'left-1/2 -translate-x-1/2' : 'left-0'
 
-  return (
+  const node = (
     <div
+      ref={contentRef}
       role='dialog'
+      style={portal ? (fixedStyle ?? getCurrentFixedStyle(wrapperRef.current, side, align)) : undefined}
       class={cn(
-        'absolute z-50',
-        sideClass,
-        alignClass,
+        portal ? 'fixed z-2147483647' : 'absolute z-50',
+        !portal && sideClass,
+        !portal && alignClass,
         'rounded border border-ga3 border-solid',
         'bg-bg1',
         'shadow-[0_4px_12px_rgba(0,0,0,.15)]',
-        'overflow-hidden',
+        'pointer-events-auto overflow-hidden',
         className
       )}
     >
       {children}
     </div>
   )
+
+  if (!portal) return node
+
+  const portalRoot = getPortalRoot(wrapperRef.current)
+  return portalRoot ? createPortal(node, portalRoot) : node
 }

@@ -113,7 +113,7 @@ html.${HTML_FLAG_CLASS} #live-player {
   position: relative;
 }
 html.${HTML_FLAG_CLASS} #live-player::after {
-  content: '🎧 LAPLACE Chatterbox - 仅音频模式';
+  content: '🎧 Chatterbox Lite - 仅音频模式';
   position: absolute;
   top: 50%;
   left: 50%;

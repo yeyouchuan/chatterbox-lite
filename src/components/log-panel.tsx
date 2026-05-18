@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks'
 
-import { logLines, maxLogLines } from '../lib/log'
+import { logLines, MAX_LOG_LINES } from '../lib/log'
 import { logPanelOpen } from '../lib/store'
 import { AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
 import { Textarea } from './ui/textarea'
@@ -18,16 +18,16 @@ export function LogPanel() {
       onOpenChange={v => {
         logPanelOpen.value = v
       }}
-      className='mt-1'
+      className='border-ga2 border-t border-solid pt-3'
     >
       <AccordionTrigger>日志</AccordionTrigger>
-      <AccordionContent>
+      <AccordionContent className='pt-2'>
         <Textarea
           ref={ref}
           readOnly
           value={logLines.value.join('\n')}
-          placeholder={`此处将输出日志（最多保留 ${maxLogLines.value} 条）`}
-          className='mt-2 h-15'
+          placeholder={`此处将输出日志（最多保留 ${MAX_LOG_LINES} 条）`}
+          className='h-20 resize-none text-[12px]'
         />
       </AccordionContent>
     </AccordionItem>

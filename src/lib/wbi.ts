@@ -27,7 +27,7 @@ function setCachedWbiKeys(keys: BilibiliWbiKeys) {
   XMLHttpRequest.prototype.send = function (body?: Document | XMLHttpRequestBodyInit | null) {
     const url = (this as XMLHttpRequest & { _url?: string })._url
     if (url?.includes('/x/web-interface/nav')) {
-      console.log('[LAPLACE Chatterbox] Intercepted request:', url)
+      console.log('[Chatterbox Lite] Intercepted request:', url)
 
       this.addEventListener('load', function () {
         try {
@@ -35,7 +35,7 @@ function setCachedWbiKeys(keys: BilibiliWbiKeys) {
             data?: { wbi_img?: { img_url?: string; sub_url?: string } }
           } = JSON.parse(this.responseText)
           if (data?.data?.wbi_img) {
-            console.log('[LAPLACE Chatterbox] wbi_img:', data.data.wbi_img)
+            console.log('[Chatterbox Lite] wbi_img:', data.data.wbi_img)
 
             const img_url = data.data.wbi_img.img_url
             const sub_url = data.data.wbi_img.sub_url
@@ -44,12 +44,12 @@ function setCachedWbiKeys(keys: BilibiliWbiKeys) {
             const sub_key = sub_url?.split('/').pop()?.split('.')[0] ?? ''
 
             setCachedWbiKeys({ img_key, sub_key })
-            console.log('[LAPLACE Chatterbox] Extracted WBI keys:', cachedWbiKeys)
+            console.log('[Chatterbox Lite] Extracted WBI keys:', cachedWbiKeys)
           } else {
-            console.log('[LAPLACE Chatterbox] Response received but wbi_img not found:', data)
+            console.log('[Chatterbox Lite] Response received but wbi_img not found:', data)
           }
         } catch (err) {
-          console.error('[LAPLACE Chatterbox] Error parsing response:', err)
+          console.error('[Chatterbox Lite] Error parsing response:', err)
         }
       })
     }

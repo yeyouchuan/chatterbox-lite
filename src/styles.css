@@ -1,9 +1,6 @@
 @import 'tailwindcss';
 
 @theme {
-  /* B站 host CSS variables. Fallbacks match the values used inline in the
-   * existing components, so behavior is identical when these vars aren't
-   * defined (e.g. on space.bilibili.com or in older themes). */
   --color-ga1: var(--Ga1, #f5f5f5);
   --color-ga1s: var(--Ga1_s, rgba(0, 0, 0, 0.04));
   --color-ga2: var(--Ga2, #eee);
@@ -14,8 +11,7 @@
   --color-bg1: var(--bg1, #fff);
   --color-bg2: var(--bg2, #f5f5f5);
 
-  /* App-specific accents currently hard-coded in inline styles. */
-  --color-brand: #36a185;
-  --color-danger: #d44;
-  --color-link: #288bb8;
+  --color-brand: #167d68;
+  --color-danger: #c83f46;
+  --color-link: #176f95;
 }
