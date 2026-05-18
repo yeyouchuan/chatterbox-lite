@@ -13,7 +13,7 @@ import { cachedEmoticonPackages, pinnedEmoticonUniques } from '../lib/store'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
-const EMOTE_GRID_CLASS = 'grid grid-cols-[repeat(auto-fill,64px)] justify-start gap-1'
+const EMOTE_GRID_CLASS = 'grid grid-cols-5 gap-x-2 gap-y-1'
 
 export function EmoteSelector() {
   const open = useSignal(false)
