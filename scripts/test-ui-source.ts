@@ -62,5 +62,9 @@ assert(
 )
 assert(directSource.includes('isConnected'), 'direct danmaku binding should detect detached chat containers')
 assert(directSource.includes('reattach'), 'direct danmaku binding should reattach when the chat container changes')
+assert(toggleSource.includes('sendLiveLike'), 'toggle area should expose the live like action')
+assert(toggleSource.includes('HeartIcon'), 'live like button should use a recognizable like icon')
+assert(toggleSource.includes('点赞x30'), 'live like button should show the one-click 30-like action')
+assert(toggleSource.includes('liking.value'), 'live like button should guard repeated clicks while sending')
 
 console.log('UI source tests passed')

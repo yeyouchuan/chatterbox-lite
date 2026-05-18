@@ -2,6 +2,14 @@ import type { BilibiliGetEmoticonsResponse, BilibiliSendDanmakuResponse, SendDan
 
 import { BASE_URL } from './const'
 import { isEmoticonUnique } from './emoticon'
+import {
+  type BilibiliLiveLikeResponse,
+  buildLiveLikeBody,
+  buildLiveLikeResult,
+  LIVE_LIKE_COUNT,
+  LIVE_LIKE_ENDPOINT,
+  type LiveLikeResult,
+} from './live-like'
 import { buildReplacementMap } from './replacement'
 import { getRoomCacheKey, shouldRefreshRoomCache } from './room-cache'
 import { buildSendDanmakuResult, fetchWithTimeout, SEND_DANMAKU_TIMEOUT_MS } from './send-danmaku-response'
@@ -27,6 +35,10 @@ export function getSpmPrefix(): string {
 
 export function getCsrfToken(): string | undefined {
   return getCookie('bili_jct')
+}
+
+export function getCurrentUserId(): string | undefined {
+  return getCookie('DedeUserID')
 }
 
 export async function getRoomId(url = window.location.href): Promise<number> {
@@ -152,6 +164,43 @@ export async function sendDanmaku(message: string, roomId: number, csrfToken: st
       success: false,
       message,
       isEmoticon: emoticon,
+      error: err instanceof Error ? err.message : String(err),
+    }
+  }
+}
+
+export async function sendLiveLike(
+  roomId: number,
+  anchorId: number,
+  userId: string,
+  csrfToken: string
+): Promise<LiveLikeResult> {
+  const body = buildLiveLikeBody({ roomId, anchorId, userId, csrfToken })
+
+  try {
+    const resp = await fetch(LIVE_LIKE_ENDPOINT, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    })
+
+    let json: BilibiliLiveLikeResponse
+    try {
+      json = await resp.json()
+    } catch (err) {
+      return {
+        success: false,
+        count: LIVE_LIKE_COUNT,
+        error: err instanceof Error ? `Invalid JSON response: ${err.message}` : 'Invalid JSON response',
+      }
+    }
+
+    return buildLiveLikeResult({ ok: resp.ok, status: resp.status, statusText: resp.statusText }, json, LIVE_LIKE_COUNT)
+  } catch (err) {
+    return {
+      success: false,
+      count: LIVE_LIKE_COUNT,
       error: err instanceof Error ? err.message : String(err),
     }
   }
