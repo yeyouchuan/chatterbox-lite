@@ -225,7 +225,7 @@ export function PopoverContent({
         'rounded border border-ga3 border-solid',
         'bg-bg1',
         'shadow-[0_4px_12px_rgba(0,0,0,.15)]',
-        'pointer-events-auto overflow-hidden',
+        'pointer-events-auto overflow-visible',
         className
       )}
     >

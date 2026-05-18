@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+:host {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
 @theme {
   --color-ga1: var(--Ga1, #f5f5f5);
   --color-ga1s: var(--Ga1_s, rgba(0, 0, 0, 0.04));
@@ -7,7 +12,7 @@
   --color-ga3: var(--Ga3, #ddd);
   --color-ga4: var(--Ga4, #999);
   --color-ga5: var(--Ga5, #9499a0);
-  --color-ga6: var(--Ga6, #797f87);
+  --color-ga6: var(--Ga6, #5f6670);
   --color-bg1: var(--bg1, #fff);
   --color-bg2: var(--bg2, #f5f5f5);
 

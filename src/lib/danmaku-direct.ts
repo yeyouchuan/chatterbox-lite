@@ -180,15 +180,33 @@ function attach(nextContainer: HTMLElement): void {
   observer.observe(nextContainer, { childList: true })
 }
 
-function tryAttach(): boolean {
+function detachContainer(): void {
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+  if (container) {
+    container.removeEventListener('click', handleClick, true)
+    container = null
+  }
+}
+
+function reattachIfNeeded(): boolean {
   const nextContainer = document.querySelector<HTMLElement>('.chat-items')
-  if (!nextContainer) return false
+  if (!nextContainer) {
+    if (container && !container.isConnected) detachContainer()
+    return false
+  }
+
+  if (container === nextContainer && container.isConnected) return true
+
+  detachContainer()
   attach(nextContainer)
   return true
 }
 
 export function startDanmakuDirect(): void {
-  if (container || pollTimer) return
+  if (pollTimer) return
 
   settingsDispose = signalEffect(() => {
     if (!container) return
@@ -199,12 +217,9 @@ export function startDanmakuDirect(): void {
     }
   })
 
-  if (tryAttach()) return
+  reattachIfNeeded()
   pollTimer = setInterval(() => {
-    if (tryAttach() && pollTimer !== null) {
-      clearInterval(pollTimer)
-      pollTimer = null
-    }
+    reattachIfNeeded()
   }, 1000)
 }
 
@@ -217,14 +232,7 @@ export function stopDanmakuDirect(): void {
     clearInterval(pollTimer)
     pollTimer = null
   }
-  if (observer) {
-    observer.disconnect()
-    observer = null
-  }
-  if (container) {
-    container.removeEventListener('click', handleClick, true)
-    container = null
-  }
+  detachContainer()
   styleEl?.remove()
   styleEl = null
 

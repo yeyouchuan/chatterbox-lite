@@ -36,8 +36,8 @@ export function extractRoomNumber(url: string): string | undefined {
 
 export function formatDanmakuError(error: string | undefined): string {
   if (!error) return '未知错误'
-  if (error === 'f' || error.includes('f')) return 'f - 包含全局屏蔽词'
-  if (error === 'k' || error.includes('k')) return 'k - 包含房间屏蔽词'
+  if (error === 'f') return 'f - 包含全局屏蔽词'
+  if (error === 'k') return 'k - 包含房间屏蔽词'
   return error
 }
 

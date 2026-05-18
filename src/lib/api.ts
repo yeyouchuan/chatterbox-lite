@@ -1,11 +1,15 @@
-import type { BilibiliGetEmoticonsResponse } from '../types'
+import type { BilibiliGetEmoticonsResponse, BilibiliSendDanmakuResponse, SendDanmakuResult } from '../types'
 
 import { BASE_URL } from './const'
 import { isEmoticonUnique } from './emoticon'
 import { buildReplacementMap } from './replacement'
-import { cachedEmoticonPackages, cachedRoomId, cachedStreamerUid } from './store'
+import { getRoomCacheKey, shouldRefreshRoomCache } from './room-cache'
+import { buildSendDanmakuResult, fetchWithTimeout, SEND_DANMAKU_TIMEOUT_MS } from './send-danmaku-response'
+import { cachedEmoticonPackages, cachedRoomId, cachedStreamerUid, replacementMap } from './store'
 import { extractRoomNumber } from './utils'
-import { cachedWbiKeys, encodeWbi } from './wbi'
+import { cachedWbiKeys, encodeWbi, waitForWbiKeys } from './wbi'
+
+let cachedRoomKey: string | null = null
 
 function getCookie(name: string): string | undefined {
   const prefix = `${name}=`
@@ -43,11 +47,24 @@ export async function getRoomId(url = window.location.href): Promise<number> {
   return roomData.data.room_id
 }
 
-export async function ensureRoomId(): Promise<number> {
+function resetRoomScopedCache(): void {
+  cachedRoomId.value = null
+  cachedStreamerUid.value = null
+  cachedEmoticonPackages.value = []
+  replacementMap.value = null
+}
+
+export async function ensureRoomId(url = window.location.href): Promise<number> {
+  const currentRoomKey = getRoomCacheKey(url)
+  if (shouldRefreshRoomCache(cachedRoomKey, currentRoomKey)) {
+    resetRoomScopedCache()
+  }
+
   let roomId = cachedRoomId.value
   if (roomId === null) {
-    roomId = await getRoomId()
+    roomId = await getRoomId(url)
     cachedRoomId.value = roomId
+    cachedRoomKey = currentRoomKey
     buildReplacementMap()
   }
   return roomId
@@ -63,14 +80,6 @@ export async function fetchEmoticons(roomId: number): Promise<void> {
   if (json?.code === 0 && json.data?.data) {
     cachedEmoticonPackages.value = json.data.data.filter(pkg => pkg.pkg_id !== 100)
   }
-}
-
-export interface SendDanmakuResult {
-  success: boolean
-  message: string
-  isEmoticon: boolean
-  error?: string
-  cancelled?: boolean
 }
 
 export async function sendDanmaku(message: string, roomId: number, csrfToken: string): Promise<SendDanmakuResult> {
@@ -99,23 +108,45 @@ export async function sendDanmaku(message: string, roomId: number, csrfToken: st
   }
 
   try {
+    if (!cachedWbiKeys) {
+      await waitForWbiKeys(800, 100)
+    }
+
     let query = ''
     if (cachedWbiKeys) {
       query = encodeWbi({ web_location: getSpmPrefix() }, cachedWbiKeys)
     }
+    const querySuffix = query ? `?${query}` : ''
 
-    const resp = await fetch(`${BASE_URL.BILIBILI_MSG_SEND}?${query}`, {
-      method: 'POST',
-      credentials: 'include',
-      body: form,
-    })
+    const resp = await fetchWithTimeout(
+      fetch,
+      `${BASE_URL.BILIBILI_MSG_SEND}${querySuffix}`,
+      {
+        method: 'POST',
+        credentials: 'include',
+        body: form,
+      },
+      SEND_DANMAKU_TIMEOUT_MS
+    )
 
-    const json: { message?: string } = await resp.json()
-    if (json.message) {
-      return { success: false, message, isEmoticon: emoticon, error: json.message }
+    let json: BilibiliSendDanmakuResponse
+    try {
+      json = await resp.json()
+    } catch (err) {
+      return {
+        success: false,
+        message,
+        isEmoticon: emoticon,
+        error: err instanceof Error ? `Invalid JSON response: ${err.message}` : 'Invalid JSON response',
+      }
     }
 
-    return { success: true, message, isEmoticon: emoticon }
+    return buildSendDanmakuResult(
+      { ok: resp.ok, status: resp.status, statusText: resp.statusText },
+      json,
+      message,
+      emoticon
+    )
   } catch (err) {
     return {
       success: false,

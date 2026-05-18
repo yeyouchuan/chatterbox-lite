@@ -23,10 +23,11 @@ export function Input({ type = 'text', disabled, className, ...props }: InputPro
         'bg-bg1 text-inherit',
         'min-h-5 leading-none outline-none',
         'cursor-text disabled:cursor-not-allowed disabled:opacity-60',
-        'transition',
+        'transition-[border-color,outline-color,box-shadow] duration-100 ease-out',
         // Replaces the previous `.lc-ui-input:focus { border-color: ... }` rule
         // from styles.ts.
         'focus:border-brand',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
         className
       )}
       {...props}

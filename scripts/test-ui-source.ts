@@ -1,0 +1,66 @@
+import { readFileSync } from 'node:fs'
+
+function assert(condition: unknown, message: string): asserts condition {
+  if (!condition) throw new Error(message)
+}
+
+const configuratorSource = readFileSync('src/components/configurator.tsx', 'utf8')
+const buttonSource = readFileSync('src/components/ui/button.tsx', 'utf8')
+const textareaSource = readFileSync('src/components/ui/textarea.tsx', 'utf8')
+const inputSource = readFileSync('src/components/ui/input.tsx', 'utf8')
+const popoverSource = readFileSync('src/components/ui/popover.tsx', 'utf8')
+const toggleSource = readFileSync('src/components/toggle-button.tsx', 'utf8')
+const audioOnlySource = readFileSync('src/components/audio-only-button.tsx', 'utf8')
+const normalSendSource = readFileSync('src/components/normal-send-tab.tsx', 'utf8')
+const directSource = readFileSync('src/lib/danmaku-direct.ts', 'utf8')
+const stylesSource = readFileSync('src/styles.css', 'utf8')
+
+assert(
+  configuratorSource.includes("setProperty('--chatterbox-lite-dialog-width'"),
+  'portal root should receive dialog width CSS variable'
+)
+assert(configuratorSource.includes("addEventListener('resize'"), 'dialog should re-clamp on viewport resize')
+assert(
+  configuratorSource.includes("addEventListener('orientationchange'"),
+  'dialog should re-clamp on orientation change'
+)
+
+for (const [name, source] of [
+  ['button', buttonSource],
+  ['textarea', textareaSource],
+  ['input', inputSource],
+  ['toggle button', toggleSource],
+  ['audio-only button', audioOnlySource],
+] as const) {
+  assert(source.includes('focus-visible:'), `${name} should expose a visible keyboard focus state`)
+}
+
+for (const [name, source] of [
+  ['button', buttonSource],
+  ['textarea', textareaSource],
+  ['input', inputSource],
+] as const) {
+  assert(!source.includes("'transition',"), `${name} should avoid broad transition-all behavior`)
+  assert(source.includes('transition-['), `${name} should scope transition properties`)
+}
+
+for (const [name, source] of [
+  ['button', buttonSource],
+  ['toggle button', toggleSource],
+  ['audio-only button', audioOnlySource],
+] as const) {
+  assert(source.includes('active:scale-[0.96]'), `${name} should provide tactile press feedback`)
+}
+
+assert(normalSendSource.includes('tabular-nums'), 'send character count should use stable tabular numbers')
+assert(popoverSource.includes('overflow-visible'), 'popover content should not clip focus rings')
+assert(!popoverSource.includes('pointer-events-auto overflow-hidden'), 'popover content should not clip focus rings')
+assert(stylesSource.includes('-webkit-font-smoothing: antialiased'), 'shadow root should enable font smoothing')
+assert(
+  stylesSource.includes('text-rendering: optimizeLegibility'),
+  'shadow root should optimize text rendering legibility'
+)
+assert(directSource.includes('isConnected'), 'direct danmaku binding should detect detached chat containers')
+assert(directSource.includes('reattach'), 'direct danmaku binding should reattach when the chat container changes')
+
+console.log('UI source tests passed')

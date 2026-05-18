@@ -21,7 +21,7 @@ import { EmoteSelector } from './emote-selector'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 
-export function NormalSendTab() {
+export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
   const sending = useSignal(false)
   const historyState = useSignal<SendHistoryState>({ index: -1, draft: '' })
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -51,9 +51,6 @@ export function NormalSendTab() {
 
     const isEmote = isEmoticonUnique(originalMessage)
     const processedMessage = isEmote ? originalMessage : applyReplacements(originalMessage)
-    fasongText.value = ''
-    historyState.value = { index: -1, draft: '' }
-    sendHistory.value = addSendHistoryEntry(sendHistory.value, originalMessage)
     sending.value = true
 
     try {
@@ -66,10 +63,12 @@ export function NormalSendTab() {
 
       const segments = isEmote ? [processedMessage] : processMessages(processedMessage, maxLength.value)
       const total = segments.length
+      let allSegmentsSent = true
 
       for (let i = 0; i < total; i++) {
         const segment = segments[i]
         const result = await enqueueDanmaku(segment, roomId, csrfToken, SendPriority.MANUAL)
+        let segmentSent = result.success
         const baseLabel = result.isEmoticon ? '手动表情' : '手动'
         const label = total > 1 ? `${baseLabel} [${i + 1}/${total}]` : baseLabel
         const displayMsg =
@@ -84,13 +83,25 @@ export function NormalSendTab() {
             appendLog(`↻ ${label} 屏蔽词重试 ${retryIndex + 1}/${retryMessages.length}`)
             const retryResult = await enqueueDanmaku(retryMessage, roomId, csrfToken, SendPriority.MANUAL)
             appendLog(retryResult, `${label} 重试 ${retryIndex + 1}`, retryMessage)
-            if (retryResult.success || !isBlockedDanmakuError(retryResult.error)) break
+            if (retryResult.success) {
+              segmentSent = true
+              break
+            }
+            if (!isBlockedDanmakuError(retryResult.error)) break
           }
         }
+
+        if (!segmentSent) allSegmentsSent = false
 
         if (i < total - 1) {
           await new Promise(r => setTimeout(r, msgSendInterval.value * 1000))
         }
+      }
+
+      if (allSegmentsSent) {
+        fasongText.value = ''
+        historyState.value = { index: -1, draft: '' }
+        sendHistory.value = addSendHistoryEntry(sendHistory.value, originalMessage)
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
@@ -101,6 +112,50 @@ export function NormalSendTab() {
     }
   }
 
+  const handleInput = (e: InputEvent & { currentTarget: HTMLTextAreaElement }) => {
+    fasongText.value = e.currentTarget.value
+    historyState.value = { index: -1, draft: '' }
+  }
+
+  const handleKeyDown = (e: KeyboardEvent & { currentTarget: HTMLTextAreaElement }) => {
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !e.isComposing && sendHistory.value.length > 0) {
+      e.preventDefault()
+      const next = navigateSendHistory(
+        sendHistory.value,
+        fasongText.value,
+        historyState.value,
+        e.key === 'ArrowUp' ? 'older' : 'newer'
+      )
+      fasongText.value = next.text
+      historyState.value = next.state
+      return
+    }
+
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+      e.preventDefault()
+      void sendMessage()
+    }
+  }
+
+  if (inputOnly) {
+    return (
+      <div class='relative'>
+        <Textarea
+          ref={textareaRef}
+          value={fasongText.value}
+          disabled={sending.value}
+          onInput={handleInput}
+          onKeyDown={handleKeyDown}
+          placeholder='输入弹幕内容'
+          className='h-12 resize-none pr-10'
+        />
+        <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[var(--Ga7,#5f6670)] tabular-nums'>
+          {fasongText.value.length}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div class='space-y-2'>
       <div class='relative'>
@@ -108,40 +163,19 @@ export function NormalSendTab() {
           ref={textareaRef}
           value={fasongText.value}
           disabled={sending.value}
-          onInput={e => {
-            fasongText.value = e.currentTarget.value
-            historyState.value = { index: -1, draft: '' }
-          }}
-          onKeyDown={e => {
-            if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !e.isComposing && sendHistory.value.length > 0) {
-              e.preventDefault()
-              const next = navigateSendHistory(
-                sendHistory.value,
-                fasongText.value,
-                historyState.value,
-                e.key === 'ArrowUp' ? 'older' : 'newer'
-              )
-              fasongText.value = next.text
-              historyState.value = next.state
-              return
-            }
-
-            if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
-              e.preventDefault()
-              void sendMessage()
-            }
-          }}
+          onInput={handleInput}
+          onKeyDown={handleKeyDown}
           placeholder='输入弹幕内容'
           className='h-12 resize-none pr-10'
         />
-        <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-ga6'>
+        <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[var(--Ga7,#5f6670)] tabular-nums'>
           {fasongText.value.length}
         </div>
       </div>
       <div class='flex items-center justify-between gap-2'>
         <div class='flex min-w-0 items-center gap-1'>
           <EmoteSelector />
-          <span class='truncate text-[11px] text-ga6'>词库会在发送前替换</span>
+          <span class='truncate text-[11px] text-[var(--Ga7,#5f6670)]'>词库会在发送前替换</span>
         </div>
         <Button size='sm' disabled={sending.value || !fasongText.value.trim()} onClick={() => void sendMessage()}>
           {sending.value ? '发送中…' : '发送'}

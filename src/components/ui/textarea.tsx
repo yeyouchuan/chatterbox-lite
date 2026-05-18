@@ -30,8 +30,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         'leading-[1.4] outline-none',
         'min-h-10 resize-y',
         'cursor-text disabled:cursor-not-allowed disabled:opacity-60',
-        'transition',
+        'transition-[border-color,outline-color,box-shadow] duration-100 ease-out',
         'focus:border-brand',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
         className
       )}
       {...props}

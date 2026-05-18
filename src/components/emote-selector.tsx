@@ -2,7 +2,7 @@ import { useSignal } from '@preact/signals'
 
 import type { BilibiliEmoticon } from '../types'
 
-import { ensureRoomId, getCsrfToken } from '../lib/api'
+import { ensureRoomId, fetchEmoticons, getCsrfToken } from '../lib/api'
 import { cn } from '../lib/cn'
 import { getPinnedEmoticons, getVisibleEmoticonPackages, togglePinnedEmoticon } from '../lib/emote-picker'
 import { formatLockedEmoticonReject, isLockedEmoticon } from '../lib/emoticon'
@@ -58,6 +58,21 @@ export function EmoteSelector() {
 
   const handleTogglePin = (unique: string) => {
     pinnedEmoticonUniques.value = togglePinnedEmoticon(pinnedEmoticonUniques.value, unique)
+  }
+
+  const handleOpenChange = (value: boolean) => {
+    open.value = value
+    if (!value || cachedEmoticonPackages.value.length > 0) return
+
+    void (async () => {
+      try {
+        const roomId = await ensureRoomId()
+        await fetchEmoticons(roomId)
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err)
+        appendLog(`⚠️ 表情数据加载失败：${msg}`)
+      }
+    })()
   }
 
   const renderEmote = (emo: BilibiliEmoticon) => {
@@ -121,12 +136,7 @@ export function EmoteSelector() {
   }
 
   return (
-    <Popover
-      open={open.value}
-      onOpenChange={v => {
-        open.value = v
-      }}
-    >
+    <Popover open={open.value} onOpenChange={handleOpenChange}>
       <PopoverTrigger>
         <Button variant={open.value ? 'default' : 'outline'} size='sm' title='表情'>
           表情

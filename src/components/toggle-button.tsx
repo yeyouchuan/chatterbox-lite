@@ -16,6 +16,9 @@ export function ToggleButton() {
           'appearance-none border-none outline-none',
           'cursor-pointer select-none',
           'rounded px-2 py-1 text-white',
+          'transition-[background-color,scale] duration-100 ease-out active:scale-[0.96]',
+          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
+          '[@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:px-3',
           dialogOpen.value ? 'bg-brand' : 'bg-ga6'
         )}
       >

@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals'
 
-import type { SendDanmakuResult } from './api'
+import type { SendDanmakuResult } from '../types'
 
 import { formatDanmakuError } from './utils'
 

@@ -1,4 +1,6 @@
-import { type SendDanmakuResult, sendDanmaku } from './api'
+import type { SendDanmakuResult } from '../types'
+
+import { sendDanmaku } from './api'
 
 export const SendPriority = {
   MANUAL: 0,

@@ -1,4 +1,5 @@
 import type { TargetedPointerEvent } from 'preact'
+import { useEffect, useRef, useState } from 'preact/hooks'
 
 import { cn } from '../lib/cn'
 import {
@@ -34,7 +35,10 @@ function clampWidth(raw: number): number {
 }
 
 export function Configurator() {
+  const dialogRef = useRef<HTMLDivElement | null>(null)
+  const [, setViewportVersion] = useState(0)
   const visible = dialogOpen.value
+  const inputOnly = showNormalSendPanel.value && !showReplacementPanel.value && !showLogPanel.value
   const width = clampWidth(dialogWidth.value)
   const customPosition = dialogLeft.value !== null && dialogTop.value !== null
   const positionStyle = customPosition
@@ -46,6 +50,28 @@ export function Configurator() {
         right: '1rem',
         bottom: `${DIALOG_DEFAULT_BOTTOM}px`,
       }
+
+  useEffect(() => {
+    const rerenderForViewport = () => {
+      setViewportVersion(version => version + 1)
+    }
+
+    window.addEventListener('resize', rerenderForViewport)
+    window.addEventListener('orientationchange', rerenderForViewport)
+    return () => {
+      window.removeEventListener('resize', rerenderForViewport)
+      window.removeEventListener('orientationchange', rerenderForViewport)
+    }
+  }, [])
+
+  useEffect(() => {
+    const root = dialogRef.current?.getRootNode()
+    if (!(root instanceof ShadowRoot)) return
+
+    root
+      .getElementById('chatterbox-lite-portal-root')
+      ?.style.setProperty('--chatterbox-lite-dialog-width', `${width}px`)
+  }, [width])
 
   const startDrag = (e: TargetedPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return
@@ -94,77 +120,90 @@ export function Configurator() {
 
   return (
     <div
+      ref={dialogRef}
       id='chatterbox-lite-dialog'
       className={cn(
         'pointer-events-auto fixed z-2147483647',
-        'max-h-[calc(100vh-112px)] overflow-y-auto',
-        'rounded-md border border-ga3 border-solid bg-bg1 text-[13px] text-[var(--Ga10,#18191c)]',
-        'shadow-[0_18px_48px_rgba(15,23,42,.22)]',
+        inputOnly
+          ? 'text-[13px] text-[var(--Ga10,#18191c)]'
+          : [
+              'max-h-[calc(100vh-112px)] overflow-y-auto',
+              'rounded-md border border-ga3 border-solid bg-bg1 text-[13px] text-[var(--Ga10,#18191c)]',
+              'shadow-[0_18px_48px_rgba(15,23,42,.22)]',
+            ],
         !visible && 'hidden'
       )}
       style={{ ...positionStyle, width: `${width}px`, '--chatterbox-lite-dialog-width': `${width}px` }}
     >
-      <ResizeHandle />
-      <div
-        class='sticky top-0 z-1 cursor-move border-ga2 border-b border-solid bg-bg1 px-2 py-1'
-        onPointerDown={startDrag}
-      >
-        <div class='flex items-center justify-between gap-2'>
-          <div class='min-w-0 truncate font-bold text-[13px]' title='拖动标题栏移动窗口'>
-            Chatterbox Lite
-          </div>
-          <div class='flex shrink-0 items-center gap-1'>
-            <Popover
-              open={settingsPanelOpen.value}
-              onOpenChange={v => {
-                settingsPanelOpen.value = v
-              }}
-            >
-              <PopoverTrigger>
+      {!inputOnly && (
+        <>
+          <ResizeHandle />
+          <div
+            class='sticky top-0 z-1 cursor-move border-ga2 border-b border-solid bg-bg1 px-2 py-1'
+            onPointerDown={startDrag}
+          >
+            <div class='flex items-center justify-between gap-2'>
+              <div class='min-w-0 truncate font-bold text-[13px]' title='拖动标题栏移动窗口'>
+                Chatterbox Lite
+              </div>
+              <div class='flex shrink-0 items-center gap-1'>
+                <Popover
+                  open={settingsPanelOpen.value}
+                  onOpenChange={v => {
+                    settingsPanelOpen.value = v
+                  }}
+                >
+                  <PopoverTrigger>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      aria-label='打开设置'
+                      title='设置'
+                      onPointerDown={e => {
+                        e.stopPropagation()
+                      }}
+                    >
+                      ⚙
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent side='bottom' align='end' portal className='w-[230px]'>
+                    <div
+                      class='overflow-y-auto p-2'
+                      style={{ maxHeight: 'min(320px, var(--chatterbox-lite-popover-max-height, 44vh))' }}
+                    >
+                      <SettingsPanel />
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Button
                   variant='ghost'
                   size='icon'
-                  aria-label='打开设置'
-                  title='设置'
+                  aria-label='关闭'
+                  title='关闭'
                   onPointerDown={e => {
                     e.stopPropagation()
                   }}
+                  onClick={() => {
+                    dialogOpen.value = false
+                  }}
                 >
-                  ⚙
+                  ×
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent side='bottom' align='end' portal className='w-[230px]'>
-                <div
-                  class='overflow-y-auto p-2'
-                  style={{ maxHeight: 'min(320px, var(--chatterbox-lite-popover-max-height, 44vh))' }}
-                >
-                  <SettingsPanel />
-                </div>
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant='ghost'
-              size='icon'
-              aria-label='关闭'
-              title='关闭'
-              onPointerDown={e => {
-                e.stopPropagation()
-              }}
-              onClick={() => {
-                dialogOpen.value = false
-              }}
-            >
-              ×
-            </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
-      <div class='space-y-3 p-3'>
-        {showNormalSendPanel.value && <NormalSendTab />}
-        {showReplacementPanel.value && <ReplacementPanel />}
-        {showLogPanel.value && <LogPanel />}
-      </div>
+      {inputOnly ? (
+        <NormalSendTab inputOnly />
+      ) : (
+        <div class='space-y-3 p-3'>
+          {showNormalSendPanel.value && <NormalSendTab />}
+          {showReplacementPanel.value && <ReplacementPanel />}
+          {showLogPanel.value && <LogPanel />}
+        </div>
+      )}
     </div>
   )
 }

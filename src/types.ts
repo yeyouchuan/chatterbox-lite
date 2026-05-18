@@ -32,6 +32,21 @@ export interface BilibiliGetEmoticonsResponse {
   }
 }
 
+export interface BilibiliSendDanmakuResponse {
+  code?: number
+  message?: string
+  msg?: string
+  data?: unknown
+}
+
+export interface SendDanmakuResult {
+  success: boolean
+  message: string
+  isEmoticon: boolean
+  error?: string
+  cancelled?: boolean
+}
+
 export interface ReplacementRule {
   from?: string
   to?: string

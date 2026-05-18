@@ -51,7 +51,10 @@ export function loadScript<T>(url: string, getGlobal: () => T | null): Promise<T
     script.onload = () => {
       const g = getGlobal()
       if (g) resolve(g)
-      else reject(new Error(`script loaded but expected global not found: ${url}`))
+      else {
+        inFlight.delete(url)
+        reject(new Error(`script loaded but expected global not found: ${url}`))
+      }
     }
     script.onerror = () => {
       // Evict so a subsequent caller can retry instead of being
