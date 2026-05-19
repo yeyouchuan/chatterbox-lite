@@ -283,7 +283,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
             ) : (
               <HeartIcon weight='fill' aria-hidden='true' />
             )}
-            {liking.value ? '点赞中' : '点赞x30'}
+            x30
           </Button>
           <Button size='sm' disabled={sending.value || !fasongText.value.trim()} onClick={() => void sendMessage()}>
             {sending.value ? (

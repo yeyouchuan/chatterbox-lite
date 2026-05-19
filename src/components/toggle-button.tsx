@@ -1,5 +1,3 @@
-import { ChatCircleTextIcon } from '@phosphor-icons/react'
-
 import { cn } from '../lib/cn'
 import { dialogOpen, showAudioOnlyButton } from '../lib/store'
 import { AudioOnlyButton } from './audio-only-button'
@@ -24,7 +22,6 @@ export function ToggleButton() {
           dialogOpen.value ? 'border-brand bg-brand' : 'border-ga6 bg-ga6'
         )}
       >
-        <ChatCircleTextIcon size={14} weight='bold' aria-hidden='true' />
         弹幕助手
       </Button>
     </div>

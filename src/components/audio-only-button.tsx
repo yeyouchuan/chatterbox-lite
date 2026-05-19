@@ -1,5 +1,3 @@
-import { SpeakerHighIcon, SpeakerSlashIcon } from '@phosphor-icons/react'
-
 import { cn } from '../lib/cn'
 import { audioOnlyEnabled } from '../lib/store'
 import { Button } from './ui/button'
@@ -29,7 +27,6 @@ import { Button } from './ui/button'
  */
 export function AudioOnlyButton() {
   const active = audioOnlyEnabled.value
-  const Icon = active ? SpeakerHighIcon : SpeakerSlashIcon
   const toggle = () => {
     audioOnlyEnabled.value = !audioOnlyEnabled.value
   }
@@ -52,7 +49,6 @@ export function AudioOnlyButton() {
         active ? 'border-[#FF6699] bg-[#FF6699]' : 'border-ga6 bg-ga6'
       )}
     >
-      <Icon size={14} weight='bold' aria-hidden='true' />
       {active ? '恢复视频' : '仅音频'}
     </Button>
   )

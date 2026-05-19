@@ -141,9 +141,8 @@ export function EmoteSelector() {
   return (
     <Popover open={open.value} onOpenChange={handleOpenChange}>
       <PopoverTrigger>
-        <Button variant={open.value ? 'default' : 'outline'} size='sm' title='表情'>
+        <Button variant={open.value ? 'default' : 'outline'} size='sm' title='表情' aria-label='表情'>
           <SmileyIcon weight='bold' aria-hidden='true' />
-          表情
         </Button>
       </PopoverTrigger>
       <PopoverContent side='top' align='start' portal className='w-[calc(var(--chatterbox-lite-dialog-width)-24px)]'>
