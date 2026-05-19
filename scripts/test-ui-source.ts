@@ -62,6 +62,7 @@ assert(
 )
 assert(directSource.includes('isConnected'), 'direct danmaku binding should detect detached chat containers')
 assert(directSource.includes('reattach'), 'direct danmaku binding should reattach when the chat container changes')
+assert(toggleSource.includes('right-2 bottom-3'), 'floating buttons should sit closer to the bottom-right corner')
 assert(normalSendSource.includes('sendLiveLike'), 'send panel should expose the live like action')
 assert(normalSendSource.includes('HeartIcon'), 'live like button should use a recognizable like icon')
 assert(normalSendSource.includes('点赞x30'), 'send panel should show the one-click 30-like action')

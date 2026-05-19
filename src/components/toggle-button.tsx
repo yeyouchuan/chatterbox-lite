@@ -7,7 +7,7 @@ import { Button } from './ui/button'
 
 export function ToggleButton() {
   return (
-    <div class='pointer-events-auto fixed right-4 bottom-6 z-2147483647 flex items-center gap-1'>
+    <div class='pointer-events-auto fixed right-2 bottom-3 z-2147483647 flex items-center gap-1'>
       {showAudioOnlyButton.value && <AudioOnlyButton />}
       <Button
         type='button'
