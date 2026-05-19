@@ -1,8 +1,8 @@
-import { CircleNotchIcon, PaperPlaneTiltIcon } from '@phosphor-icons/react'
+import { CircleNotchIcon, HeartIcon, PaperPlaneTiltIcon } from '@phosphor-icons/react'
 import { useSignal } from '@preact/signals'
 import { useRef } from 'preact/hooks'
 
-import { ensureRoomId, getCsrfToken } from '../lib/api'
+import { ensureRoomId, getCsrfToken, getCurrentUserId, sendLiveLike } from '../lib/api'
 import { buildBlockedRetryMessages, isBlockedDanmakuError } from '../lib/blocked-retry'
 import {
   formatLockedEmoticonReject,
@@ -16,7 +16,14 @@ import { appendLog } from '../lib/log'
 import { applyReplacements } from '../lib/replacement'
 import { addSendHistoryEntry, navigateSendHistory, type SendHistoryState } from '../lib/send-history'
 import { enqueueDanmaku, SendPriority } from '../lib/send-queue'
-import { blockedRetryEnabled, fasongText, maxLength, msgSendInterval, sendHistory } from '../lib/store'
+import {
+  blockedRetryEnabled,
+  cachedStreamerUid,
+  fasongText,
+  maxLength,
+  msgSendInterval,
+  sendHistory,
+} from '../lib/store'
 import { processMessages } from '../lib/utils'
 import { EmoteSelector } from './emote-selector'
 import { Button } from './ui/button'
@@ -24,6 +31,7 @@ import { Textarea } from './ui/textarea'
 
 export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
   const sending = useSignal(false)
+  const liking = useSignal(false)
   const historyState = useSignal<SendHistoryState>({ index: -1, draft: '' })
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -118,6 +126,40 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
     historyState.value = { index: -1, draft: '' }
   }
 
+  const sendLike = async () => {
+    if (liking.value) return
+
+    liking.value = true
+    try {
+      const roomId = await ensureRoomId()
+      const anchorId = cachedStreamerUid.value
+      const csrfToken = getCsrfToken()
+      const userId = getCurrentUserId()
+
+      if (!csrfToken || !userId) {
+        appendLog('❌ 未找到登录信息，请先登录 Bilibili')
+        return
+      }
+
+      if (anchorId === null) {
+        appendLog('❌ 未识别到主播 UID，无法点赞')
+        return
+      }
+
+      const result = await sendLiveLike(roomId, anchorId, userId, csrfToken)
+      if (result.success) {
+        appendLog(`👍 点赞x${result.count} 已发送`)
+      } else {
+        appendLog(`❌ 点赞失败：${result.error ?? 'unknown error'}`)
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      appendLog(`🔴 点赞出错：${msg}`)
+    } finally {
+      liking.value = false
+    }
+  }
+
   const handleKeyDown = (e: KeyboardEvent & { currentTarget: HTMLTextAreaElement }) => {
     if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !e.isComposing && sendHistory.value.length > 0) {
       e.preventDefault()
@@ -178,19 +220,36 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
           <EmoteSelector />
           <span class='truncate text-[11px] text-[var(--Ga7,#5f6670)]'>词库会在发送前替换</span>
         </div>
-        <Button size='sm' disabled={sending.value || !fasongText.value.trim()} onClick={() => void sendMessage()}>
-          {sending.value ? (
-            <>
+        <div class='flex shrink-0 items-center gap-1'>
+          <Button
+            size='sm'
+            variant='outline'
+            disabled={liking.value}
+            aria-label='点赞 30 次'
+            title='点赞 30 次'
+            onClick={() => void sendLike()}
+          >
+            {liking.value ? (
               <CircleNotchIcon className='animate-spin' aria-hidden='true' />
-              发送中…
-            </>
-          ) : (
-            <>
-              <PaperPlaneTiltIcon weight='bold' aria-hidden='true' />
-              发送
-            </>
-          )}
-        </Button>
+            ) : (
+              <HeartIcon weight='fill' aria-hidden='true' />
+            )}
+            {liking.value ? '点赞中' : '点赞x30'}
+          </Button>
+          <Button size='sm' disabled={sending.value || !fasongText.value.trim()} onClick={() => void sendMessage()}>
+            {sending.value ? (
+              <>
+                <CircleNotchIcon className='animate-spin' aria-hidden='true' />
+                发送中…
+              </>
+            ) : (
+              <>
+                <PaperPlaneTiltIcon weight='bold' aria-hidden='true' />
+                发送
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   )
