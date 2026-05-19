@@ -3,12 +3,17 @@ import { signal } from '@preact/signals'
 import type { BilibiliEmoticonPackage, RemoteKeywords, ReplacementRule } from '../types'
 
 import { GM_getValue, GM_setValue } from '$'
-import { DIALOG_DEFAULT_WIDTH, getInitialDialogWidth, OLD_DIALOG_DEFAULT_WIDTH } from './dialog-width'
+import {
+  DIALOG_DEFAULT_WIDTH,
+  getInitialDialogWidth,
+  OLD_DIALOG_DEFAULT_WIDTH,
+  PREVIOUS_DIALOG_DEFAULT_WIDTH,
+} from './dialog-width'
 import { gmSignal } from './gm-signal'
 
 const storedDialogWidth = GM_getValue<number | undefined>('dialogWidth', undefined)
 const initialDialogWidth = getInitialDialogWidth(storedDialogWidth)
-if (storedDialogWidth === OLD_DIALOG_DEFAULT_WIDTH) {
+if (storedDialogWidth === OLD_DIALOG_DEFAULT_WIDTH || storedDialogWidth === PREVIOUS_DIALOG_DEFAULT_WIDTH) {
   GM_setValue('dialogWidth', DIALOG_DEFAULT_WIDTH)
 }
 
