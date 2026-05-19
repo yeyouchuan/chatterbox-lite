@@ -13,7 +13,11 @@ import { gmSignal } from './gm-signal'
 
 const storedDialogWidth = GM_getValue<number | undefined>('dialogWidth', undefined)
 const initialDialogWidth = getInitialDialogWidth(storedDialogWidth)
-if (storedDialogWidth === OLD_DIALOG_DEFAULT_WIDTH || storedDialogWidth === PREVIOUS_DIALOG_DEFAULT_WIDTH) {
+if (
+  storedDialogWidth === OLD_DIALOG_DEFAULT_WIDTH ||
+  storedDialogWidth === PREVIOUS_DIALOG_DEFAULT_WIDTH ||
+  storedDialogWidth === 382
+) {
   GM_setValue('dialogWidth', DIALOG_DEFAULT_WIDTH)
 }
 
