@@ -1,4 +1,38 @@
-import { cachedRoomId, localGlobalRules, localRoomRules, remoteKeywords, replacementMap } from './store'
+import type { RemoteKeywords } from '../types'
+
+import { BASE_URL } from './const'
+import {
+  cachedRoomId,
+  localGlobalRules,
+  localRoomRules,
+  remoteKeywords,
+  remoteKeywordsLastSync,
+  replacementMap,
+} from './store'
+
+export const REMOTE_KEYWORDS_SYNC_INTERVAL_MS = 10 * 60 * 1000
+
+export async function fetchRemoteKeywords(): Promise<RemoteKeywords> {
+  const response = await fetch(BASE_URL.REMOTE_KEYWORDS)
+  if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+  return await response.json()
+}
+
+export async function syncRemoteKeywords(): Promise<void> {
+  remoteKeywords.value = await fetchRemoteKeywords()
+  remoteKeywordsLastSync.value = Date.now()
+  buildReplacementMap()
+}
+
+export async function ensureRemoteKeywordsSynced(force = false): Promise<void> {
+  const last = remoteKeywordsLastSync.value
+  if (force || !last || Date.now() - last > REMOTE_KEYWORDS_SYNC_INTERVAL_MS) {
+    await syncRemoteKeywords()
+    return
+  }
+
+  buildReplacementMap()
+}
 
 /**
  * Builds the replacement map from remote and local rules.
@@ -51,4 +85,11 @@ export function applyReplacements(text: string): string {
     result = result.split(from).join(to)
   }
   return result
+}
+
+export function getReplacementEntries(): Array<[string, string]> {
+  if (replacementMap.value === null) {
+    buildReplacementMap()
+  }
+  return Array.from((replacementMap.value ?? new Map<string, string>()).entries())
 }

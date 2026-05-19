@@ -2,12 +2,11 @@ import { ArrowsClockwiseIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react'
 import { useSignal } from '@preact/signals'
 import { useEffect } from 'preact/hooks'
 
-import type { RemoteKeywords, ReplacementRule } from '../types'
+import type { ReplacementRule } from '../types'
 
 import { ensureRoomId } from '../lib/api'
-import { BASE_URL } from '../lib/const'
 import { appendLog } from '../lib/log'
-import { buildReplacementMap } from '../lib/replacement'
+import { buildReplacementMap, REMOTE_KEYWORDS_SYNC_INTERVAL_MS, syncRemoteKeywords } from '../lib/replacement'
 import {
   cachedRoomId,
   localGlobalRules,
@@ -19,14 +18,6 @@ import {
 import { AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-
-const SYNC_INTERVAL_MS = 10 * 60 * 1000
-
-async function fetchRemoteKeywords(): Promise<RemoteKeywords> {
-  const response = await fetch(BASE_URL.REMOTE_KEYWORDS)
-  if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-  return await response.json()
-}
 
 function formatSyncStatus(): string {
   const data = remoteKeywords.value
@@ -97,9 +88,7 @@ export function ReplacementPanel() {
     syncing.value = true
     status.value = '正在同步…'
     try {
-      remoteKeywords.value = await fetchRemoteKeywords()
-      remoteKeywordsLastSync.value = Date.now()
-      buildReplacementMap()
+      await syncRemoteKeywords()
       status.value = formatSyncStatus()
       appendLog('✅ 云端词库同步完成')
     } catch (err) {
@@ -120,7 +109,7 @@ export function ReplacementPanel() {
       }
 
       const last = remoteKeywordsLastSync.value
-      if (!last || Date.now() - last > SYNC_INTERVAL_MS) {
+      if (!last || Date.now() - last > REMOTE_KEYWORDS_SYNC_INTERVAL_MS) {
         await syncRemote()
       } else {
         buildReplacementMap()

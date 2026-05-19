@@ -2,8 +2,9 @@ import { CircleNotchIcon, HeartIcon, PaperPlaneTiltIcon } from '@phosphor-icons/
 import { useSignal } from '@preact/signals'
 import { useRef } from 'preact/hooks'
 
+import { tryAiEvasion } from '../lib/ai-evasion'
 import { ensureRoomId, getCsrfToken, getCurrentUserId, sendLiveLike } from '../lib/api'
-import { buildBlockedRetryMessages, isBlockedDanmakuError } from '../lib/blocked-retry'
+import { buildBlockedRetryMessages, buildReplacementRetryMessage, isBlockedDanmakuError } from '../lib/blocked-retry'
 import {
   formatLockedEmoticonReject,
   formatUnavailableEmoticonReject,
@@ -13,7 +14,7 @@ import {
 } from '../lib/emoticon'
 import { focusTextareaAfterSend } from '../lib/focus-after-send'
 import { appendLog } from '../lib/log'
-import { applyReplacements } from '../lib/replacement'
+import { applyReplacements, ensureRemoteKeywordsSynced, getReplacementEntries } from '../lib/replacement'
 import { addSendHistoryEntry, navigateSendHistory, type SendHistoryState } from '../lib/send-history'
 import { enqueueDanmaku, SendPriority } from '../lib/send-queue'
 import {
@@ -58,12 +59,21 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
       return
     }
 
-    const isEmote = isEmoticonUnique(originalMessage)
-    const processedMessage = isEmote ? originalMessage : applyReplacements(originalMessage)
     sending.value = true
 
     try {
       const roomId = await ensureRoomId()
+      const isEmote = isEmoticonUnique(originalMessage)
+      if (!isEmote) {
+        try {
+          await ensureRemoteKeywordsSynced()
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err)
+          appendLog(`⚠️ 云端词库同步失败，将使用已有词库：${msg}`)
+        }
+      }
+
+      const processedMessage = isEmote ? originalMessage : applyReplacements(originalMessage)
       const csrfToken = getCsrfToken()
       if (!csrfToken) {
         appendLog('❌ 未找到登录信息，请先登录 Bilibili')
@@ -86,17 +96,56 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
         appendLog(result, label, displayMsg)
 
         if (!result.success && !result.isEmoticon && blockedRetryEnabled.value && isBlockedDanmakuError(result.error)) {
-          const retryMessages = buildBlockedRetryMessages(segment, 3)
-          for (let retryIndex = 0; retryIndex < retryMessages.length; retryIndex++) {
-            const retryMessage = retryMessages[retryIndex]
-            appendLog(`↻ ${label} 屏蔽词重试 ${retryIndex + 1}/${retryMessages.length}`)
-            const retryResult = await enqueueDanmaku(retryMessage, roomId, csrfToken, SendPriority.MANUAL)
-            appendLog(retryResult, `${label} 重试 ${retryIndex + 1}`, retryMessage)
-            if (retryResult.success) {
-              segmentSent = true
-              break
+          let retryStillBlocked = true
+          const aiResult = await tryAiEvasion(
+            segment,
+            roomId,
+            csrfToken,
+            label,
+            (message, retryRoomId, retryCsrfToken) =>
+              enqueueDanmaku(message, retryRoomId, retryCsrfToken, SendPriority.MANUAL)
+          )
+
+          if (aiResult.success) {
+            segmentSent = true
+          } else if (aiResult.error && !isBlockedDanmakuError(aiResult.error)) {
+            retryStillBlocked = false
+          }
+
+          if (!segmentSent && retryStillBlocked) {
+            try {
+              await ensureRemoteKeywordsSynced(true)
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : String(err)
+              appendLog(`⚠️ ${label} 重试前同步云端词库失败：${msg}`)
             }
-            if (!isBlockedDanmakuError(retryResult.error)) break
+
+            const replacementRetry = buildReplacementRetryMessage(segment, getReplacementEntries())
+            if (replacementRetry) {
+              appendLog(`↻ ${label} 词库重试：${replacementRetry.matched.join(', ')}`)
+              const retryResult = await enqueueDanmaku(replacementRetry.message, roomId, csrfToken, SendPriority.MANUAL)
+              appendLog(retryResult, `${label} 词库重试`, replacementRetry.message)
+              if (retryResult.success) {
+                segmentSent = true
+              } else {
+                retryStillBlocked = isBlockedDanmakuError(retryResult.error)
+              }
+            }
+          }
+
+          if (!segmentSent && retryStillBlocked) {
+            const retryMessages = buildBlockedRetryMessages(segment, 3)
+            for (let retryIndex = 0; retryIndex < retryMessages.length; retryIndex++) {
+              const retryMessage = retryMessages[retryIndex]
+              appendLog(`↻ ${label} 软字符重试 ${retryIndex + 1}/${retryMessages.length}`)
+              const retryResult = await enqueueDanmaku(retryMessage, roomId, csrfToken, SendPriority.MANUAL)
+              appendLog(retryResult, `${label} 软字符重试 ${retryIndex + 1}`, retryMessage)
+              if (retryResult.success) {
+                segmentSent = true
+                break
+              }
+              if (!isBlockedDanmakuError(retryResult.error)) break
+            }
           }
         }
 

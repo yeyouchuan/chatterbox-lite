@@ -65,3 +65,25 @@ export function buildBlockedRetryMessages(message: string, maxAttempts = 3): str
 
   return candidates
 }
+
+export interface ReplacementRetryMessage {
+  message: string
+  matched: string[]
+}
+
+export function buildReplacementRetryMessage(
+  message: string,
+  replacements: Iterable<[string, string]>
+): ReplacementRetryMessage | null {
+  let result = message
+  const matched: string[] = []
+
+  for (const [from, to] of replacements) {
+    if (!from || !result.includes(from)) continue
+    matched.push(from)
+    result = result.split(from).join(to)
+  }
+
+  if (result === message) return null
+  return { message: result, matched }
+}
