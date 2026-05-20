@@ -12,6 +12,7 @@ const popoverSource = readFileSync('src/components/ui/popover.tsx', 'utf8')
 const toggleSource = readFileSync('src/components/toggle-button.tsx', 'utf8')
 const audioOnlySource = readFileSync('src/components/audio-only-button.tsx', 'utf8')
 const normalSendSource = readFileSync('src/components/normal-send-tab.tsx', 'utf8')
+const settingsButtonSource = readFileSync('src/components/settings-popover-button.tsx', 'utf8')
 const directSource = readFileSync('src/lib/danmaku-direct.ts', 'utf8')
 const stylesSource = readFileSync('src/styles.css', 'utf8')
 
@@ -19,6 +20,7 @@ assert(
   configuratorSource.includes("setProperty('--chatterbox-lite-dialog-width'"),
   'portal root should receive dialog width CSS variable'
 )
+assert(configuratorSource.includes("'rounded-xl border"), 'main dialog should use a softer outer radius')
 assert(configuratorSource.includes("addEventListener('resize'"), 'dialog should re-clamp on viewport resize')
 assert(
   configuratorSource.includes("addEventListener('orientationchange'"),
@@ -53,6 +55,10 @@ for (const [name, source] of [
 }
 
 assert(normalSendSource.includes('tabular-nums'), 'send character count should use stable tabular numbers')
+assert(buttonSource.includes('gap-1.5 rounded-lg'), 'buttons should use the softer control radius')
+assert(textareaSource.includes('rounded-lg border border-ga4'), 'textareas should use the softer control radius')
+assert(inputSource.includes('rounded-lg border border-ga4'), 'inputs should use the softer control radius')
+assert(popoverSource.includes('rounded-lg border border-ga3'), 'popovers should match the softer control radius')
 assert(popoverSource.includes('overflow-visible'), 'popover content should not clip focus rings')
 assert(!popoverSource.includes('pointer-events-auto overflow-hidden'), 'popover content should not clip focus rings')
 assert(stylesSource.includes('-webkit-font-smoothing: antialiased'), 'shadow root should enable font smoothing')
@@ -66,6 +72,13 @@ assert(toggleSource.includes('right-2 bottom-3'), 'floating buttons should sit c
 assert(normalSendSource.includes('sendLiveLike'), 'send panel should expose the live like action')
 assert(normalSendSource.includes('HeartIcon'), 'live like button should use a recognizable like icon')
 assert(normalSendSource.includes('x30'), 'send panel should keep the one-click 30-like count')
+assert(
+  normalSendSource.includes('<SettingsPopoverButton />'),
+  'send panel should render the settings action next to like'
+)
+assert(settingsButtonSource.includes('GearSixIcon'), 'settings action should use a recognizable settings icon')
+assert(!configuratorSource.includes('XIcon'), 'main dialog should not render a close button')
+assert(!configuratorSource.includes('cursor-move'), 'main dialog should not render a draggable title bar')
 assert(!normalSendSource.includes("'点赞x30'"), 'live like button should omit the like text label')
 assert(!normalSendSource.includes("'点赞中'"), 'live like button should omit loading text')
 assert(normalSendSource.includes('liking.value'), 'live like button should guard repeated clicks while sending')

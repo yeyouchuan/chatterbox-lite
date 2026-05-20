@@ -20,7 +20,7 @@ export interface ButtonProps extends ButtonBase {
 
 const BASE_CLASS = [
   'inline-flex items-center justify-center',
-  'gap-1.5 rounded-md',
+  'gap-1.5 rounded-lg',
   'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
   'font-medium leading-[1.2]',
   'select-none whitespace-nowrap box-border',

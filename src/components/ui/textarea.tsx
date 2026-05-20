@@ -25,7 +25,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       class={cn(
         'box-border w-full',
         'px-1 py-0.5',
-        'rounded-md border border-ga4 border-solid',
+        'rounded-lg border border-ga4 border-solid',
         'bg-bg1 text-inherit',
         'leading-[1.4] outline-none',
         'placeholder:text-ga5',

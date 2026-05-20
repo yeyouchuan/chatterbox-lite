@@ -4,10 +4,10 @@ function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
 }
 
-const source = readFileSync('src/components/configurator.tsx', 'utf8')
+const source = readFileSync('src/components/settings-popover-button.tsx', 'utf8')
 
 assert(
-  /<PopoverContent\s+side='bottom'\s+align='end'\s+portal\s+className='w-\[230px\]'>/.test(source),
+  /<PopoverContent\s+side=\{side\}\s+align=\{align\}\s+portal\s+className='w-\[230px\]'>/.test(source),
   'settings popover should use the portal layer so it is not clipped by the dialog'
 )
 assert(

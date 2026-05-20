@@ -27,6 +27,7 @@ import {
 } from '../lib/store'
 import { processMessages } from '../lib/utils'
 import { EmoteSelector } from './emote-selector'
+import { SettingsPopoverButton } from './settings-popover-button'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 
@@ -239,7 +240,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
           onInput={handleInput}
           onKeyDown={handleKeyDown}
           placeholder='输入弹幕内容'
-          className='h-12 resize-none pr-10'
+          className='h-20 resize-none pr-10'
         />
         <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[var(--Ga7,#5f6670)] tabular-nums'>
           {fasongText.value.length}
@@ -258,7 +259,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
           onInput={handleInput}
           onKeyDown={handleKeyDown}
           placeholder='输入弹幕内容'
-          className='h-12 resize-none pr-10'
+          className='h-20 resize-none pr-10'
         />
         <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[var(--Ga7,#5f6670)] tabular-nums'>
           {fasongText.value.length}
@@ -267,9 +268,9 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
       <div class='flex items-center justify-between gap-2'>
         <div class='flex min-w-0 items-center gap-1'>
           <EmoteSelector />
-          <span class='truncate text-[11px] text-[var(--Ga7,#5f6670)]'>词库会在发送前替换</span>
         </div>
         <div class='flex shrink-0 items-center gap-1'>
+          <SettingsPopoverButton />
           <Button
             size='sm'
             variant='outline'
