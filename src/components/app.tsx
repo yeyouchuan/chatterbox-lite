@@ -3,13 +3,18 @@ import { useEffect } from 'preact/hooks'
 import { ensureRoomId, fetchEmoticons } from '../lib/api'
 import { startAudioOnly, stopAudioOnly } from '../lib/audio-only'
 import { startDanmakuDirect, stopDanmakuDirect } from '../lib/danmaku-direct'
+import { startDesktopBridgeAgent } from '../lib/desktop-bridge-agent'
 import { appendLog } from '../lib/log'
 import { ensureRemoteKeywordsSynced } from '../lib/replacement'
+import { setRuntimeAdapter } from '../lib/runtime'
+import { userscriptRuntime } from '../lib/userscript-runtime'
 import { Configurator } from './configurator'
 import { ToggleButton } from './toggle-button'
 
 export function App() {
   useEffect(() => {
+    setRuntimeAdapter(userscriptRuntime)
+
     void (async () => {
       try {
         const roomId = await ensureRoomId()
@@ -26,9 +31,11 @@ export function App() {
       }
     })()
 
+    const desktopBridgeAgent = startDesktopBridgeAgent()
     startAudioOnly()
     startDanmakuDirect()
     return () => {
+      desktopBridgeAgent.stop()
       stopAudioOnly()
       stopDanmakuDirect()
     }

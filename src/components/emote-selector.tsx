@@ -3,19 +3,24 @@ import { useSignal } from '@preact/signals'
 
 import type { BilibiliEmoticon } from '../types'
 
-import { ensureRoomId, fetchEmoticons, getCsrfToken } from '../lib/api'
 import { cn } from '../lib/cn'
 import { getPinnedEmoticons, getVisibleEmoticonPackages, togglePinnedEmoticon } from '../lib/emote-picker'
 import { formatLockedEmoticonReject, isLockedEmoticon } from '../lib/emoticon'
 import { appendLog } from '../lib/log'
-import { enqueueDanmaku, SendPriority } from '../lib/send-queue'
+import { getRuntimeAdapter } from '../lib/runtime'
 import { cachedEmoticonPackages, pinnedEmoticonUniques } from '../lib/store'
 import { Button } from './ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Popover, PopoverContent, type PopoverSide, PopoverTrigger } from './ui/popover'
 
 const EMOTE_GRID_CLASS = 'grid grid-cols-6 gap-x-1 gap-y-0.5'
 
-export function EmoteSelector() {
+function normalizeImageUrl(url: string): string {
+  if (url.startsWith('//')) return `https:${url}`
+  if (url.startsWith('http://')) return `https://${url.slice('http://'.length)}`
+  return url
+}
+
+export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
   const open = useSignal(false)
   const copiedId = useSignal<string | null>(null)
   const packages = cachedEmoticonPackages.value
@@ -31,13 +36,7 @@ export function EmoteSelector() {
     }
 
     try {
-      const roomId = await ensureRoomId()
-      const csrfToken = getCsrfToken()
-      if (!csrfToken) {
-        appendLog('❌ 未找到登录信息，请先登录 Bilibili')
-        return
-      }
-      const result = await enqueueDanmaku(unique, roomId, csrfToken, SendPriority.MANUAL)
+      const result = await getRuntimeAdapter().sendDanmaku(unique)
       appendLog(result, '手动表情', unique)
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
@@ -69,8 +68,7 @@ export function EmoteSelector() {
 
     void (async () => {
       try {
-        const roomId = await ensureRoomId()
-        await fetchEmoticons(roomId)
+        await getRuntimeAdapter().fetchEmoticons()
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
         appendLog(`⚠️ 表情数据加载失败：${msg}`)
@@ -86,7 +84,10 @@ export function EmoteSelector() {
     const lockText = emo.unlock_show_text?.trim() || ''
 
     return (
-      <div key={unique} class='relative flex min-w-0 flex-col items-center gap-0.5'>
+      <div
+        key={unique}
+        class='relative flex min-w-0 flex-col items-center gap-0.5 [contain-intrinsic-size:58px_68px] [content-visibility:auto]'
+      >
         <button
           type='button'
           title={isPinned ? '取消置顶' : '置顶到常用'}
@@ -112,7 +113,16 @@ export function EmoteSelector() {
           onClick={() => void handleSend(unique)}
           className={cn('relative size-[52px] p-0.5', isLocked && 'opacity-60')}
         >
-          <img src={emo.url} alt={emo.emoji} class='size-full object-contain' loading='lazy' />
+          <img
+            src={normalizeImageUrl(emo.url)}
+            alt={emo.emoji}
+            class='size-full object-contain'
+            decoding='async'
+            draggable={false}
+            fetchPriority='low'
+            loading='lazy'
+            referrerPolicy='no-referrer'
+          />
           {isLocked && (
             <span
               class='pointer-events-none absolute top-px right-px rounded-sm p-0.5 text-[9px] text-white leading-none'
@@ -145,7 +155,7 @@ export function EmoteSelector() {
           <SmileyIcon weight='bold' aria-hidden='true' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent side='top' align='start' portal className='w-[calc(var(--chatterbox-lite-dialog-width)-24px)]'>
+      <PopoverContent side={side} align='start' portal className='w-[calc(var(--chatterbox-lite-dialog-width)-24px)]'>
         <div
           class='overflow-y-auto p-1.5 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-ga4 [&::-webkit-scrollbar]:w-1.5'
           style={{ maxHeight: 'min(360px, var(--chatterbox-lite-popover-max-height, 44vh))' }}

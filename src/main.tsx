@@ -1,6 +1,5 @@
 import { render } from 'preact'
 
-import { GM_registerMenuCommand } from '$'
 import css from './styles.css?inline'
 import './lib/wbi'
 
@@ -36,9 +35,11 @@ function mount() {
 }
 
 if (isBilibiliLiveRoomPage(window.location.href, window.self === window.top)) {
-  GM_registerMenuCommand('Open Chatterbox Lite', () => {
-    dialogOpen.value = true
-  })
+  if (typeof GM_registerMenuCommand === 'function') {
+    GM_registerMenuCommand('Open Chatterbox Lite', () => {
+      dialogOpen.value = true
+    })
+  }
 
   if (document.body) {
     mount()

@@ -12,6 +12,8 @@ import {
 
 export const REMOTE_KEYWORDS_SYNC_INTERVAL_MS = 10 * 60 * 1000
 
+let backgroundSyncPromise: Promise<void> | null = null
+
 export async function fetchRemoteKeywords(): Promise<RemoteKeywords> {
   const response = await fetch(BASE_URL.REMOTE_KEYWORDS)
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -32,6 +34,23 @@ export async function ensureRemoteKeywordsSynced(force = false): Promise<void> {
   }
 
   buildReplacementMap()
+}
+
+export function warmRemoteKeywordsInBackground(force = false): void {
+  const last = remoteKeywordsLastSync.value
+  if (!force && last && Date.now() - last <= REMOTE_KEYWORDS_SYNC_INTERVAL_MS) {
+    buildReplacementMap()
+    return
+  }
+
+  if (backgroundSyncPromise) return
+  backgroundSyncPromise = syncRemoteKeywords()
+    .catch(() => {
+      buildReplacementMap()
+    })
+    .finally(() => {
+      backgroundSyncPromise = null
+    })
 }
 
 /**

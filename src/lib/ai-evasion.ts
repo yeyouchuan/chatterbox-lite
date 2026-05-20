@@ -71,10 +71,8 @@ export interface TryAiEvasionResult {
 
 export async function tryAiEvasion(
   message: string,
-  roomId: number,
-  csrfToken: string,
   logPrefix: string,
-  sendRetry: (message: string, roomId: number, csrfToken: string) => Promise<SendDanmakuResult>
+  sendRetry: (message: string) => Promise<SendDanmakuResult>
 ): Promise<TryAiEvasionResult> {
   const prefix = logPrefix ? `${logPrefix} ` : ''
   appendLog(`🤖 ${prefix}AI规避：正在检测敏感词…`)
@@ -89,7 +87,7 @@ export async function tryAiEvasion(
   appendLog(`🤖 ${prefix}检测到敏感词：${sensitiveWords.join(', ')}，正在尝试规避…`)
 
   const evadedMessage = replaceSensitiveWords(message, sensitiveWords)
-  const retryResult = await sendRetry(evadedMessage, roomId, csrfToken)
+  const retryResult = await sendRetry(evadedMessage)
   if (retryResult.success) {
     appendLog(`✅ ${prefix}AI规避成功: ${evadedMessage}`)
     return { success: true, evadedMessage }

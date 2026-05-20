@@ -147,6 +147,10 @@ function getCurrentFixedStyle(
   } as JSX.CSSProperties
 }
 
+function requestLayoutChange(): void {
+  window.dispatchEvent(new CustomEvent('chatterbox-lite:layout-change'))
+}
+
 export function PopoverContent({
   children,
   side = 'bottom',
@@ -187,11 +191,13 @@ export function PopoverContent({
   useEffect(() => {
     if (!open || !portal) {
       setFixedStyle(undefined)
+      requestLayoutChange()
       return
     }
 
     const update = () => {
       setFixedStyle(getCurrentFixedStyle(wrapperRef.current, side, align))
+      requestLayoutChange()
     }
     update()
 
@@ -200,6 +206,7 @@ export function PopoverContent({
     return () => {
       window.removeEventListener('resize', update)
       window.removeEventListener('scroll', update, true)
+      requestLayoutChange()
     }
   }, [open, portal, side, align])
 
@@ -217,6 +224,8 @@ export function PopoverContent({
     <div
       ref={contentRef}
       role='dialog'
+      data-chatterbox-lite-popover='true'
+      data-chatterbox-lite-no-drag='true'
       style={portal ? (fixedStyle ?? getCurrentFixedStyle(wrapperRef.current, side, align)) : undefined}
       class={cn(
         portal ? 'fixed z-2147483647' : 'absolute z-50',

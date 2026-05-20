@@ -4,9 +4,9 @@ import { useEffect } from 'preact/hooks'
 
 import type { ReplacementRule } from '../types'
 
-import { ensureRoomId } from '../lib/api'
 import { appendLog } from '../lib/log'
 import { buildReplacementMap, REMOTE_KEYWORDS_SYNC_INTERVAL_MS, syncRemoteKeywords } from '../lib/replacement'
+import { getRuntimeAdapter } from '../lib/runtime'
 import {
   cachedRoomId,
   localGlobalRules,
@@ -57,7 +57,7 @@ function RuleList({
       {rules.map((rule, index) => (
         <div key={`${rule.from}-${index}`} class='flex items-center gap-2 rounded bg-ga1 px-2 py-1'>
           <span class='min-w-0 flex-1 truncate text-[12px]'>
-            {rule.from || '(空)'} → {rule.to || '(空)'}
+            {rule.from || '(空)'} {'->'} {rule.to || '(空)'}
           </span>
           <Button
             type='button'
@@ -103,7 +103,7 @@ export function ReplacementPanel() {
   useEffect(() => {
     void (async () => {
       try {
-        await ensureRoomId()
+        await getRuntimeAdapter().ensureRoomState()
       } catch {
         return
       }
@@ -205,7 +205,7 @@ export function ReplacementPanel() {
                   globalFrom.value = e.currentTarget.value
                 }}
               />
-              <span class='text-ga6'>→</span>
+              <span class='text-ga6'>{'->'}</span>
               <Input
                 placeholder='替换后'
                 value={globalTo.value}
@@ -233,7 +233,7 @@ export function ReplacementPanel() {
                   roomFrom.value = e.currentTarget.value
                 }}
               />
-              <span class='text-ga6'>→</span>
+              <span class='text-ga6'>{'->'}</span>
               <Input
                 placeholder='替换后'
                 value={roomTo.value}
