@@ -13,7 +13,7 @@ import { cachedEmoticonPackages, pinnedEmoticonUniques } from '../lib/store'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
-const EMOTE_GRID_CLASS = 'grid grid-cols-5 gap-x-2 gap-y-1'
+const EMOTE_GRID_CLASS = 'grid grid-cols-6 gap-x-1 gap-y-0.5'
 
 export function EmoteSelector() {
   const open = useSignal(false)
@@ -110,7 +110,7 @@ export function EmoteSelector() {
           variant='outline'
           title={`${emo.emoji}\n点击发送: ${unique}`}
           onClick={() => void handleSend(unique)}
-          className={cn('relative size-16 p-0.5', isLocked && 'opacity-60')}
+          className={cn('relative size-[52px] p-0.5', isLocked && 'opacity-60')}
         >
           <img src={emo.url} alt={emo.emoji} class='size-full object-contain' loading='lazy' />
           {isLocked && (
@@ -147,7 +147,7 @@ export function EmoteSelector() {
       </PopoverTrigger>
       <PopoverContent side='top' align='start' portal className='w-[calc(var(--chatterbox-lite-dialog-width)-24px)]'>
         <div
-          class='overflow-y-auto p-2'
+          class='overflow-y-auto p-1.5 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-ga4 [&::-webkit-scrollbar]:w-1.5'
           style={{ maxHeight: 'min(360px, var(--chatterbox-lite-popover-max-height, 44vh))' }}
         >
           {packages.length === 0 ? (
