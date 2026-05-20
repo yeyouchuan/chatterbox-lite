@@ -266,7 +266,10 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
         </div>
       </div>
       <div class='flex items-center justify-between gap-2'>
-        <div class='flex min-w-0 items-center gap-1'>
+        <div
+          class='flex min-w-0 flex-1 cursor-move items-center gap-1 self-stretch'
+          data-chatterbox-lite-drag-surface='true'
+        >
           <EmoteSelector />
         </div>
         <div class='flex shrink-0 items-center gap-1'>

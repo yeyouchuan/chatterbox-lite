@@ -24,8 +24,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       disabled={disabled}
       class={cn(
         'box-border w-full',
-        'px-1 py-0.5',
-        'rounded-lg border border-ga4 border-solid',
+        'px-2 py-1.5',
+        'rounded-lg border border-ga3 border-solid',
         'bg-bg1 text-inherit',
         'leading-[1.4] outline-none',
         'placeholder:text-ga5',

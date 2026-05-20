@@ -31,6 +31,15 @@ function clampWidth(raw: number): number {
   return Math.max(DIALOG_MIN_WIDTH, Math.min(raw, viewportMax))
 }
 
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    Boolean(
+      target.closest('button, input, textarea, select, a, label, summary, [role="button"], [contenteditable="true"]')
+    )
+  )
+}
+
 export function Configurator() {
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const [, setViewportVersion] = useState(0)
@@ -69,6 +78,58 @@ export function Configurator() {
       ?.style.setProperty('--chatterbox-lite-dialog-width', `${width}px`)
   }, [width])
 
+  const startDrag = (e: TargetedPointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return
+    if (isInteractiveTarget(e.target)) return
+
+    const dragSurface =
+      e.target === e.currentTarget ||
+      (e.target instanceof HTMLElement && e.target.closest('[data-chatterbox-lite-drag-surface="true"]'))
+    if (!dragSurface) return
+
+    e.preventDefault()
+
+    const target = e.currentTarget
+    const dialog = dialogRef.current
+    if (!dialog) return
+
+    const rect = dialog.getBoundingClientRect()
+    const startX = e.clientX
+    const startY = e.clientY
+    const startLeft = rect.left
+    const startTop = rect.top
+    const maxLeft = Math.max(DIALOG_EDGE_MARGIN, window.innerWidth - rect.width - DIALOG_EDGE_MARGIN)
+    const maxTop = Math.max(
+      DIALOG_EDGE_MARGIN,
+      window.innerHeight - Math.min(rect.height, window.innerHeight) - DIALOG_EDGE_MARGIN
+    )
+
+    target.setPointerCapture(e.pointerId)
+
+    const previousCursor = document.body.style.cursor
+    const previousUserSelect = document.body.style.userSelect
+    document.body.style.cursor = 'move'
+    document.body.style.userSelect = 'none'
+
+    const onMove = (ev: PointerEvent) => {
+      dialogLeft.value = clamp(startLeft + ev.clientX - startX, DIALOG_EDGE_MARGIN, maxLeft)
+      dialogTop.value = clamp(startTop + ev.clientY - startY, DIALOG_EDGE_MARGIN, maxTop)
+    }
+
+    const onEnd = (ev: PointerEvent) => {
+      target.releasePointerCapture(ev.pointerId)
+      target.removeEventListener('pointermove', onMove)
+      target.removeEventListener('pointerup', onEnd)
+      target.removeEventListener('pointercancel', onEnd)
+      document.body.style.cursor = previousCursor
+      document.body.style.userSelect = previousUserSelect
+    }
+
+    target.addEventListener('pointermove', onMove)
+    target.addEventListener('pointerup', onEnd)
+    target.addEventListener('pointercancel', onEnd)
+  }
+
   return (
     <div
       ref={dialogRef}
@@ -76,15 +137,21 @@ export function Configurator() {
       className={cn(
         'pointer-events-auto fixed z-2147483647',
         'max-h-[calc(100vh-112px)] overflow-y-auto',
-        'rounded-xl border border-ga3 border-solid bg-bg1 text-[13px] text-[var(--Ga10,#18191c)]',
+        'rounded-xl border border-ga2 border-solid bg-bg1 text-[13px] text-[var(--Ga10,#18191c)]',
         'shadow-[0_18px_48px_rgba(15,23,42,.22)]',
         !visible && 'hidden'
       )}
       style={{ ...positionStyle, width: `${width}px`, '--chatterbox-lite-dialog-width': `${width}px` }}
     >
       <ResizeHandle />
+      <div
+        class='absolute top-0 right-3 left-3 z-10 h-3 cursor-move select-none'
+        style={{ touchAction: 'none' }}
+        onPointerDown={startDrag}
+        title='拖动移动窗口'
+      />
 
-      <div class='space-y-3 p-3'>
+      <div class='space-y-3 p-3' onPointerDown={startDrag}>
         {showNormalSendPanel.value ? (
           <NormalSendTab />
         ) : (
