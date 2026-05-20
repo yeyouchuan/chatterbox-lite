@@ -6,6 +6,7 @@ import './lib/wbi'
 
 import { App } from './components/app'
 import { dialogOpen } from './lib/store'
+import { isBilibiliLiveRoomPage } from './lib/utils'
 
 function mount() {
   const host = document.createElement('div')
@@ -34,7 +35,7 @@ function mount() {
   render(<App />, app)
 }
 
-if (location.hostname === 'live.bilibili.com') {
+if (isBilibiliLiveRoomPage(window.location.href, window.self === window.top)) {
   GM_registerMenuCommand('Open Chatterbox Lite', () => {
     dialogOpen.value = true
   })

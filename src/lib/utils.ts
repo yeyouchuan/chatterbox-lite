@@ -34,6 +34,13 @@ export function extractRoomNumber(url: string): string | undefined {
   return pathSegments.find(segment => Number.isInteger(Number(segment)))
 }
 
+export function isBilibiliLiveRoomPage(url: string, isTopWindow = true): boolean {
+  if (!isTopWindow) return false
+
+  const urlObj = new URL(url)
+  return urlObj.protocol === 'https:' && urlObj.hostname === 'live.bilibili.com' && /^\/\d+\/?$/.test(urlObj.pathname)
+}
+
 export function formatDanmakuError(error: string | undefined): string {
   if (!error) return '未知错误'
   if (error === 'f') return 'f - 包含全局屏蔽词'
