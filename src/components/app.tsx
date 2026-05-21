@@ -2,6 +2,7 @@ import { useEffect } from 'preact/hooks'
 
 import { ensureRoomId, fetchEmoticons } from '../lib/api'
 import { startAudioOnly, stopAudioOnly } from '../lib/audio-only'
+import { startAutoSeek, stopAutoSeek } from '../lib/auto-seek'
 import { startDanmakuDirect, stopDanmakuDirect } from '../lib/danmaku-direct'
 import { startDesktopBridgeAgent } from '../lib/desktop-bridge-agent'
 import { appendLog } from '../lib/log'
@@ -33,10 +34,12 @@ export function App() {
 
     const desktopBridgeAgent = startDesktopBridgeAgent()
     startAudioOnly()
+    startAutoSeek()
     startDanmakuDirect()
     return () => {
       desktopBridgeAgent.stop()
       stopAudioOnly()
+      stopAutoSeek()
       stopDanmakuDirect()
     }
   }, [])

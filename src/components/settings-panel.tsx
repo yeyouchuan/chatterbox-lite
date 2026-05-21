@@ -1,6 +1,10 @@
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
 
 import {
+  autoSeekBufferThreshold,
+  autoSeekCurrentBufferLen,
+  autoSeekCurrentRate,
+  autoSeekEnabled,
   blockedRetryEnabled,
   danmakuDirectEnabled,
   dialogLeft,
@@ -11,6 +15,7 @@ import {
   showReplacementPanel,
 } from '../lib/store'
 import { Button } from './ui/button'
+import { Input } from './ui/input'
 
 function SettingCheckbox({
   label,
@@ -37,6 +42,12 @@ function SettingCheckbox({
 }
 
 export function SettingsPanel() {
+  const autoSeekDelayDelta = autoSeekCurrentBufferLen.value - autoSeekBufferThreshold.value
+  const autoSeekDelayColor =
+    autoSeekCurrentBufferLen.value < 0.2 ? '#f44' : autoSeekDelayDelta > 1 ? '#e8a200' : '#36a185'
+  const autoSeekRateColor =
+    Math.abs(autoSeekCurrentRate.value - 1) < 0.005 ? '#666' : autoSeekCurrentRate.value > 1 ? '#e8a200' : '#f44'
+
   return (
     <div class='space-y-2'>
       <div class='flex items-center justify-between gap-2'>
@@ -96,6 +107,54 @@ export function SettingsPanel() {
             danmakuDirectEnabled.value = v
           }}
         />
+        <div class='mt-1 border-ga2 border-t border-t-solid pt-1 font-bold text-[12px]'>播放器追帧</div>
+        <SettingCheckbox
+          label='启用自动追帧'
+          checked={autoSeekEnabled.value}
+          onChange={v => {
+            autoSeekEnabled.value = v
+          }}
+        />
+        <label htmlFor='autoSeekBufferThreshold' class='flex items-center gap-1 text-[12px]'>
+          <span>目标延迟</span>
+          <Input
+            id='autoSeekBufferThreshold'
+            type='number'
+            min='0.3'
+            max='10'
+            step='0.1'
+            disabled={!autoSeekEnabled.value}
+            value={autoSeekBufferThreshold.value}
+            className='w-16'
+            onInput={e => {
+              const value = Number.parseFloat(e.currentTarget.value)
+              if (Number.isFinite(value) && value >= 0.3 && value <= 10) {
+                autoSeekBufferThreshold.value = value
+              }
+            }}
+            onBlur={e => {
+              let value = Number.parseFloat(e.currentTarget.value)
+              if (!Number.isFinite(value) || value < 0.3) value = 0.3
+              if (value > 10) value = 10
+              autoSeekBufferThreshold.value = value
+            }}
+          />
+          <span>秒</span>
+        </label>
+        {autoSeekEnabled.value && (
+          <div class='rounded border border-ga2 border-solid bg-ga1 p-1.5 text-[12px]'>
+            <div>
+              当前延迟{' '}
+              <span style={{ color: autoSeekDelayColor, fontWeight: 600 }}>
+                {autoSeekCurrentBufferLen.value.toFixed(2)} 秒
+              </span>
+            </div>
+            <div>
+              播放速度{' '}
+              <span style={{ color: autoSeekRateColor, fontWeight: 600 }}>{autoSeekCurrentRate.value.toFixed(2)}×</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

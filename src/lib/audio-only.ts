@@ -82,7 +82,7 @@ import { audioOnlyEnabled } from './store'
 
 const HTML_FLAG_CLASS = 'lc-audio-only'
 const STYLE_ID = 'lc-audio-only-style'
-const AUDIO_EL_ID = 'lc-audio-only-stream'
+export const AUDIO_EL_ID = 'lc-audio-only-stream'
 
 // Pinned mpegts.js version. Locked rather than `latest` so a breaking
 // upstream change doesn't silently land in user browsers on next CDN
