@@ -46,17 +46,21 @@ assert(
   'main dialog should keep the settings entry so hidden panels can be restored'
 )
 
-const sendStart = source.indexOf('const isEmote = isEmoticonUnique(originalMessage)')
-assert(sendStart !== -1, 'send flow should still detect emotes')
-const firstClearAfterSendStart = source.indexOf("fasongText.value = ''", sendStart)
-const csrfLookup = source.indexOf('const csrfToken = getCsrfToken()', sendStart)
+const sendStart = source.indexOf('const originalMessage = fasongText.value.trim()')
+assert(sendStart !== -1, 'send flow should still read the current draft')
+const emoteCheck = source.indexOf('const isEmote = isEmoticonUnique(originalMessage)', sendStart)
+assert(emoteCheck !== -1, 'send flow should still detect emotes')
+const sendingStart = source.indexOf('sending.value = true', sendStart)
+assert(sendingStart !== -1, 'send flow should mark the send as in progress')
+const firstClearAfterSendingStart = source.indexOf("fasongText.value = ''", sendingStart)
+const runtimeLookup = source.indexOf('const runtime = getRuntimeAdapter()', sendStart)
 const historyWrite = source.indexOf('sendHistory.value = addSendHistoryEntry', sendStart)
 
-assert(csrfLookup !== -1, 'send flow should look up csrf before sending')
+assert(runtimeLookup !== -1, 'send flow should resolve the runtime adapter before sending')
 assert(
-  firstClearAfterSendStart > csrfLookup,
-  'send flow should not clear the draft before room/csrf validation succeeds'
+  firstClearAfterSendingStart > runtimeLookup,
+  'send flow should not clear the draft before runtime send setup succeeds'
 )
-assert(historyWrite > csrfLookup, 'send flow should not add history before room/csrf validation succeeds')
+assert(historyWrite > runtimeLookup, 'send flow should not add history before runtime send setup succeeds')
 
 console.log('Compact send panel tests passed')

@@ -56,3 +56,23 @@ export interface RemoteKeywords {
   global?: { keywords?: Record<string, string> }
   rooms?: Array<{ room: string; keywords?: Record<string, string> }>
 }
+
+export type FertilityStatus = 'menstruating' | 'fertile' | 'ovulating' | 'normal'
+
+export interface FertilityUserResponse {
+  status: FertilityStatus
+  nextPeriod: string
+  cyclesElapsedSinceObservation: number
+  dayInCycle: number
+  effectiveCycleLength: number
+  dataPoints: number
+}
+
+export interface BilibiliUser {
+  guildInfo?: {
+    history?: Array<{ name: string; updatedAt: number }>
+  }
+  mcnInfo?: {
+    history?: Array<{ mcnName: string; updatedAt: number }>
+  }
+}

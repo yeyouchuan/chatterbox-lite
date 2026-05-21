@@ -13,6 +13,9 @@ const toggleSource = readFileSync('src/components/toggle-button.tsx', 'utf8')
 const audioOnlySource = readFileSync('src/components/audio-only-button.tsx', 'utf8')
 const normalSendSource = readFileSync('src/components/normal-send-tab.tsx', 'utf8')
 const settingsButtonSource = readFileSync('src/components/settings-popover-button.tsx', 'utf8')
+const settingsPanelSource = readFileSync('src/components/settings-panel.tsx', 'utf8')
+const infoButtonSource = readFileSync('src/components/info-button.tsx', 'utf8')
+const infoStatusSource = readFileSync('src/lib/info-status.ts', 'utf8')
 const directSource = readFileSync('src/lib/danmaku-direct.ts', 'utf8')
 const stylesSource = readFileSync('src/styles.css', 'utf8')
 
@@ -76,10 +79,7 @@ assert(toggleSource.includes('right-2 bottom-3'), 'floating buttons should sit c
 assert(normalSendSource.includes('sendLiveLike'), 'send panel should expose the live like action')
 assert(normalSendSource.includes('HeartIcon'), 'live like button should use a recognizable like icon')
 assert(normalSendSource.includes('x30'), 'send panel should keep the one-click 30-like count')
-assert(
-  normalSendSource.includes('<SettingsPopoverButton />'),
-  'send panel should render the settings action next to like'
-)
+assert(normalSendSource.includes('<SettingsPopoverButton'), 'send panel should render the settings action next to like')
 assert(settingsButtonSource.includes('GearSixIcon'), 'settings action should use a recognizable settings icon')
 assert(!configuratorSource.includes('XIcon'), 'main dialog should not render a close button')
 assert(configuratorSource.includes('const startDrag'), 'main dialog should keep a drag handler without the title row')
@@ -100,5 +100,19 @@ assert(!toggleSource.includes('sendLiveLike'), 'floating toggle area should not 
 assert(!toggleSource.includes('ChatCircleTextIcon'), 'floating toggle should not render an icon')
 assert(!audioOnlySource.includes('SpeakerHighIcon'), 'audio-only button should not render an active-state icon')
 assert(!audioOnlySource.includes('SpeakerSlashIcon'), 'audio-only button should not render an inactive-state icon')
+assert(toggleSource.includes('<InfoButton />'), 'floating controls should render the streamer info button')
+assert(
+  infoButtonSource.includes('if (!anyEnabled) return null'),
+  'info button should stay hidden until a category is enabled'
+)
+assert(settingsPanelSource.includes('infoFertilityEnabled'), 'settings panel should expose fertility info toggle')
+assert(settingsPanelSource.includes('infoGuildEnabled'), 'settings panel should expose guild info toggle')
+assert(settingsPanelSource.includes('infoMcnEnabled'), 'settings panel should expose MCN info toggle')
+assert(infoStatusSource.includes('fertilityInFlight'), 'info status should dedupe fertility requests')
+assert(infoStatusSource.includes('bilibiliUserInFlight'), 'info status should dedupe user metadata requests')
+assert(
+  infoStatusSource.includes('resp.status === 404'),
+  'info status should treat missing upstream data as an empty result'
+)
 
 console.log('UI source tests passed')

@@ -5,6 +5,9 @@ import {
   danmakuDirectEnabled,
   dialogLeft,
   dialogTop,
+  infoFertilityEnabled,
+  infoGuildEnabled,
+  infoMcnEnabled,
   showAudioOnlyButton,
   showLogPanel,
   showNormalSendPanel,
@@ -94,6 +97,28 @@ export function SettingsPanel() {
           checked={danmakuDirectEnabled.value}
           onChange={v => {
             danmakuDirectEnabled.value = v
+          }}
+        />
+        <div class='mt-1 border-ga2 border-t border-t-solid pt-1 font-bold text-[12px]'>主播额外信息</div>
+        <SettingCheckbox
+          label='显示魔法期'
+          checked={infoFertilityEnabled.value}
+          onChange={v => {
+            infoFertilityEnabled.value = v
+          }}
+        />
+        <SettingCheckbox
+          label='显示公会信息'
+          checked={infoGuildEnabled.value}
+          onChange={v => {
+            infoGuildEnabled.value = v
+          }}
+        />
+        <SettingCheckbox
+          label='显示 MCN 信息'
+          checked={infoMcnEnabled.value}
+          onChange={v => {
+            infoMcnEnabled.value = v
           }}
         />
       </div>
