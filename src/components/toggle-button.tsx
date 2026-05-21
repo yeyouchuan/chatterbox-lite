@@ -1,14 +1,12 @@
 import { cn } from '../lib/cn'
 import { dialogOpen, showAudioOnlyButton } from '../lib/store'
 import { AudioOnlyButton } from './audio-only-button'
-import { InfoButton } from './info-button'
 import { Button } from './ui/button'
 
 export function ToggleButton() {
   return (
     <div class='pointer-events-auto fixed right-2 bottom-3 z-2147483647 flex items-center gap-1'>
       {showAudioOnlyButton.value && <AudioOnlyButton />}
-      <InfoButton />
       <Button
         type='button'
         id='chatterbox-lite-toggle'

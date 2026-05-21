@@ -1,4 +1,4 @@
-export const VERSION = typeof GM_info !== 'undefined' && GM_info.script?.version ? GM_info.script.version : '2.3.0'
+export const VERSION = typeof GM_info !== 'undefined' && GM_info.script?.version ? GM_info.script.version : '2.2.0'
 
 export const PROJECT_URL = 'https://github.com/laplace-live/chatterbox'
 export const PROJECT_NAME = 'Chatterbox Lite'
@@ -8,6 +8,4 @@ export const BASE_URL = {
   BILIBILI_MSG_SEND: 'https://api.live.bilibili.com/msg/send',
   BILIBILI_GET_EMOTICONS: 'https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons',
   REMOTE_KEYWORDS: 'https://workers.vrp.moe/gh-raw/laplace-live/public/master/artifacts/livesrtream-keywords.json',
-  LAPLACE_BILIBILI_USER: 'https://workers.vrp.moe/laplace/bilibili-user',
-  LAPLACE_FERTILITY: 'https://workers.vrp.moe/laplace/fertility',
 } as const
