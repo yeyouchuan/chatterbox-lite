@@ -1,4 +1,4 @@
-export const VERSION = typeof GM_info !== 'undefined' && GM_info.script?.version ? GM_info.script.version : '2.3.1'
+export const VERSION = typeof GM_info !== 'undefined' && GM_info.script?.version ? GM_info.script.version : '2.3.2'
 
 export const PROJECT_URL = 'https://github.com/laplace-live/chatterbox'
 export const PROJECT_NAME = 'Chatterbox Lite'

@@ -9,6 +9,7 @@ export type BridgeCommandType =
   | 'sendDanmaku'
   | 'sendLiveLike'
   | 'fetchEmoticons'
+  | 'updateAutoSeekSettings'
   | 'getSettingsSnapshot'
 
 export interface BridgeRoomState {
@@ -39,6 +40,8 @@ export interface BridgeSettingsSnapshot {
   sendHistory: string[]
   localGlobalRules: ReplacementRule[]
   localRoomRules: Record<string, ReplacementRule[]>
+  autoSeekEnabled: boolean
+  autoSeekBufferThreshold: number
 }
 
 export interface BridgeCommandPayloads {
@@ -46,6 +49,7 @@ export interface BridgeCommandPayloads {
   sendDanmaku: { message: string }
   sendLiveLike: Record<string, never>
   fetchEmoticons: Record<string, never>
+  updateAutoSeekSettings: { enabled?: boolean; bufferThreshold?: number }
   getSettingsSnapshot: Record<string, never>
 }
 
@@ -54,6 +58,7 @@ export interface BridgeCommandResults {
   sendDanmaku: SendDanmakuResult
   sendLiveLike: BridgeLiveLikeResult
   fetchEmoticons: BilibiliEmoticonPackage[]
+  updateAutoSeekSettings: BridgeSettingsSnapshot
   getSettingsSnapshot: BridgeSettingsSnapshot
 }
 

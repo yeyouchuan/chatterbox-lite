@@ -45,6 +45,10 @@ const appSource = readFileSync('src/components/app.tsx', 'utf8')
 const settingsSource = readFileSync('src/components/settings-panel.tsx', 'utf8')
 const storeSource = readFileSync('src/lib/store.ts', 'utf8')
 const audioOnlySource = readFileSync('src/lib/audio-only.ts', 'utf8')
+const bridgeProtocolSource = readFileSync('src/lib/bridge-protocol.ts', 'utf8')
+const bridgeAgentSource = readFileSync('src/lib/desktop-bridge-agent.ts', 'utf8')
+const desktopRuntimeSource = readFileSync('src/lib/desktop-runtime.ts', 'utf8')
+const settingsSnapshotSource = readFileSync('src/lib/settings-snapshot.ts', 'utf8')
 
 assert(
   autoSeekSource.includes('MutationObserver'),
@@ -71,5 +75,26 @@ assert(settingsSource.includes('autoSeekBufferThreshold'), 'settings should expo
 assert(storeSource.includes("gmSignal('autoSeekEnabled'"), 'auto-seek enabled state should persist')
 assert(storeSource.includes("gmSignal('autoSeekBufferThreshold'"), 'auto-seek target latency should persist')
 assert(audioOnlySource.includes('export const AUDIO_EL_ID'), 'audio-only stream id should be shared with auto-seek')
+assert(
+  bridgeProtocolSource.includes('updateAutoSeekSettings'),
+  'desktop bridge should define an auto-seek settings sync command'
+)
+assert(
+  bridgeAgentSource.includes('updateAutoSeekSettings'),
+  'live page bridge agent should apply desktop auto-seek setting updates'
+)
+assert(
+  desktopRuntimeSource.includes('syncDesktopAutoSeekSettings'),
+  'desktop runtime should expose an auto-seek settings sync helper'
+)
+assert(
+  settingsSource.includes('syncDesktopAutoSeekSettings'),
+  'settings panel should sync auto-seek changes from desktop to the live page'
+)
+assert(settingsSnapshotSource.includes('autoSeekEnabled'), 'settings snapshot should include auto-seek enabled state')
+assert(
+  settingsSnapshotSource.includes('autoSeekBufferThreshold'),
+  'settings snapshot should include auto-seek target latency'
+)
 
 console.log('Auto-seek tests passed')

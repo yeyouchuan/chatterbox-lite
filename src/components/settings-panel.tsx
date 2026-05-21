@@ -1,5 +1,6 @@
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
 
+import { syncDesktopAutoSeekSettings } from '../lib/desktop-runtime'
 import {
   autoSeekBufferThreshold,
   autoSeekCurrentBufferLen,
@@ -47,6 +48,14 @@ export function SettingsPanel() {
     autoSeekCurrentBufferLen.value < 0.2 ? '#f44' : autoSeekDelayDelta > 1 ? '#e8a200' : '#36a185'
   const autoSeekRateColor =
     Math.abs(autoSeekCurrentRate.value - 1) < 0.005 ? '#666' : autoSeekCurrentRate.value > 1 ? '#e8a200' : '#f44'
+  const updateAutoSeekEnabled = (value: boolean) => {
+    autoSeekEnabled.value = value
+    syncDesktopAutoSeekSettings()
+  }
+  const updateAutoSeekBufferThreshold = (value: number) => {
+    autoSeekBufferThreshold.value = value
+    syncDesktopAutoSeekSettings()
+  }
 
   return (
     <div class='space-y-2'>
@@ -112,7 +121,7 @@ export function SettingsPanel() {
           label='启用自动追帧'
           checked={autoSeekEnabled.value}
           onChange={v => {
-            autoSeekEnabled.value = v
+            updateAutoSeekEnabled(v)
           }}
         />
         <label htmlFor='autoSeekBufferThreshold' class='flex items-center gap-1 text-[12px]'>
@@ -129,14 +138,14 @@ export function SettingsPanel() {
             onInput={e => {
               const value = Number.parseFloat(e.currentTarget.value)
               if (Number.isFinite(value) && value >= 0.3 && value <= 10) {
-                autoSeekBufferThreshold.value = value
+                updateAutoSeekBufferThreshold(value)
               }
             }}
             onBlur={e => {
               let value = Number.parseFloat(e.currentTarget.value)
               if (!Number.isFinite(value) || value < 0.3) value = 0.3
               if (value > 10) value = 10
-              autoSeekBufferThreshold.value = value
+              updateAutoSeekBufferThreshold(value)
             }}
           />
           <span>秒</span>

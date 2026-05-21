@@ -9,6 +9,7 @@ import type {
 import { BRIDGE_HOST, BRIDGE_PORTS, BRIDGE_PROTOCOL_VERSION } from './bridge-protocol'
 import { appendLog } from './log'
 import { getSettingsSnapshot } from './settings-snapshot'
+import { autoSeekBufferThreshold, autoSeekEnabled } from './store'
 import { getUserscriptRoomState, userscriptRuntime } from './userscript-runtime'
 
 const RETRY_DELAY_MS = 2_000
@@ -66,6 +67,14 @@ async function executeCommand(command: BridgeCommand): Promise<BridgeCommandResu
   if (command.type === 'sendDanmaku') return await userscriptRuntime.sendDanmaku(command.payload.message)
   if (command.type === 'sendLiveLike') return await userscriptRuntime.sendLiveLike()
   if (command.type === 'fetchEmoticons') return await userscriptRuntime.fetchEmoticons()
+  if (command.type === 'updateAutoSeekSettings') {
+    const { enabled, bufferThreshold } = command.payload
+    if (typeof enabled === 'boolean') autoSeekEnabled.value = enabled
+    if (typeof bufferThreshold === 'number' && Number.isFinite(bufferThreshold)) {
+      autoSeekBufferThreshold.value = Math.max(0.3, Math.min(bufferThreshold, 10))
+    }
+    return getSettingsSnapshot()
+  }
   return getSettingsSnapshot()
 }
 

@@ -15,7 +15,13 @@ import type { ChatterboxRuntime } from './runtime'
 import { getDesktopApi } from './desktop-api'
 import { appendLog } from './log'
 import { applySettingsSnapshot } from './settings-snapshot'
-import { cachedEmoticonPackages, cachedRoomId, cachedStreamerUid } from './store'
+import {
+  autoSeekBufferThreshold,
+  autoSeekEnabled,
+  cachedEmoticonPackages,
+  cachedRoomId,
+  cachedStreamerUid,
+} from './store'
 
 const IMPORT_MARKER_KEY = 'chatterbox-lite:desktopSettingsImported'
 
@@ -135,6 +141,23 @@ export function startDesktopRuntime(): void {
     })
     .catch(err => {
       appendLog(`桌面桥接状态读取失败：${err instanceof Error ? err.message : String(err)}`)
+    })
+}
+
+export function syncDesktopAutoSeekSettings(): void {
+  if (!desktopBridgeState.value.connected) return
+  void sendDesktopCommand('updateAutoSeekSettings', {
+    enabled: autoSeekEnabled.value,
+    bufferThreshold: autoSeekBufferThreshold.value,
+  })
+    .then(snapshot => {
+      desktopBridgeState.value = {
+        ...desktopBridgeState.value,
+        settingsSnapshot: snapshot,
+      }
+    })
+    .catch(err => {
+      appendLog(`自动追帧设置同步失败：${err instanceof Error ? err.message : String(err)}`)
     })
 }
 

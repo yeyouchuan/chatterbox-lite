@@ -1,6 +1,8 @@
 import type { BridgeSettingsSnapshot } from './bridge-protocol'
 
 import {
+  autoSeekBufferThreshold,
+  autoSeekEnabled,
   blockedRetryEnabled,
   dialogWidth,
   localGlobalRules,
@@ -32,6 +34,8 @@ export function getSettingsSnapshot(): BridgeSettingsSnapshot {
     sendHistory: sendHistory.value,
     localGlobalRules: localGlobalRules.value,
     localRoomRules: localRoomRules.value,
+    autoSeekEnabled: autoSeekEnabled.value,
+    autoSeekBufferThreshold: autoSeekBufferThreshold.value,
   }
 }
 
@@ -47,4 +51,6 @@ export function applySettingsSnapshot(snapshot: BridgeSettingsSnapshot): void {
   sendHistory.value = snapshot.sendHistory
   localGlobalRules.value = snapshot.localGlobalRules
   localRoomRules.value = snapshot.localRoomRules
+  autoSeekEnabled.value = snapshot.autoSeekEnabled
+  autoSeekBufferThreshold.value = snapshot.autoSeekBufferThreshold
 }
