@@ -42,10 +42,13 @@ const SIZE_CLASS: Record<ButtonSize, string> = {
 }
 
 const VARIANT_CLASS: Record<ButtonVariant, string> = {
-  default: 'border border-brand border-solid bg-brand text-white shadow-[0_1px_0_rgba(0,0,0,.06)]',
-  secondary: 'border border-ga3 border-solid bg-ga1s text-inherit shadow-[0_1px_0_rgba(0,0,0,.04)]',
+  default:
+    'border border-brand border-solid bg-brand text-white shadow-[0_8px_18px_rgba(37,99,217,.18),inset_0_1px_0_rgba(255,255,255,.24)]',
+  secondary:
+    'border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid bg-acrylic-control text-inherit shadow-none backdrop-blur-md',
   destructive: 'bg-transparent text-danger border border-solid border-danger',
-  outline: 'border border-ga4 border-solid bg-bg1 text-inherit shadow-[0_1px_0_rgba(0,0,0,.04)]',
+  outline:
+    'border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid bg-acrylic-control text-inherit shadow-none backdrop-blur-md',
   ghost: 'bg-transparent text-inherit border border-solid border-transparent',
   link: 'border border-transparent border-solid bg-transparent p-0 text-link underline underline-offset-2 min-h-[auto]',
 }

@@ -1,23 +1,27 @@
 {
   "name": "chatterbox-lite",
   "private": true,
-  "version": "2.3.2",
+  "version": "2.3.3",
   "type": "module",
   "main": "out/main/index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "desktop:dev": "electron-vite dev",
-    "desktop:build": "electron-vite build",
-    "desktop:pack": "bun run desktop:build && electron-builder --win portable --config.win.signAndEditExecutable=false",
+    "helper:clean": "node -e \"const fs=require('fs'); for (const path of ['out/preload','out/renderer']) fs.rmSync(path,{recursive:true,force:true})\"",
+    "helper:dev": "electron-vite dev",
+    "helper:build": "bun run helper:clean && electron-vite build",
+    "helper:pack": "bun run helper:build && electron-builder --win portable --config.win.signAndEditExecutable=false",
+    "desktop:dev": "bun run helper:dev",
+    "desktop:build": "bun run helper:build",
+    "desktop:pack": "bun run helper:pack",
     "preview": "vite preview",
     "lint": "biome check"
   },
   "build": {
     "appId": "cn.chatterbox.lite",
-    "productName": "Chatterbox Lite",
+    "productName": "Arclight Helper",
     "files": [
-      "out/**/*"
+      "out/main/**/*"
     ],
     "directories": {
       "output": "release"

@@ -12,7 +12,11 @@ assert(
 )
 assert(!source.includes('w-[min(460px'), 'emote popover should not use the wide 460px cap')
 assert(source.includes('portal'), 'emote popover should still use portal positioning')
-assert(source.includes('grid grid-cols-6 gap-x-1 gap-y-0.5'), 'emote grid should fit six compact columns')
+assert(
+  source.includes('grid grid-cols-[repeat(auto-fit,minmax(52px,1fr))] gap-x-1 gap-y-0.5'),
+  'emote grid should keep compact default density and expand as the dialog widens'
+)
+assert(!source.includes('grid grid-cols-6'), 'emote grid should not stay locked to six fixed columns')
 assert(source.includes('size-[52px]'), 'emote buttons should be compact enough for six columns')
 assert(source.includes('[scrollbar-width:thin]'), 'emote popover should use a thinner scrollbar')
 assert(source.includes('[&::-webkit-scrollbar]:w-1.5'), 'emote popover should thin WebKit scrollbars')

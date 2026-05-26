@@ -49,13 +49,16 @@ function RuleList({
   onRemove: (index: number) => void
 }) {
   if (rules.length === 0) {
-    return <div class='rounded bg-ga1 px-2 py-2 text-[12px] text-ga6'>{empty}</div>
+    return <div class='rounded bg-acrylic-control px-2 py-2 text-[12px] text-ga6 backdrop-blur-md'>{empty}</div>
   }
 
   return (
     <div class='max-h-24 space-y-1 overflow-y-auto'>
       {rules.map((rule, index) => (
-        <div key={`${rule.from}-${index}`} class='flex items-center gap-2 rounded bg-ga1 px-2 py-1'>
+        <div
+          key={`${rule.from}-${index}`}
+          class='flex items-center gap-2 rounded bg-acrylic-control px-2 py-1 backdrop-blur-md'
+        >
           <span class='min-w-0 flex-1 truncate text-[12px]'>
             {rule.from || '(空)'} {'->'} {rule.to || '(空)'}
           </span>
@@ -181,7 +184,7 @@ export function ReplacementPanel() {
       onOpenChange={v => {
         replacementPanelOpen.value = v
       }}
-      className='border-ga2 border-t border-solid pt-3'
+      className='border-[color:var(--chatterbox-lite-acrylic-divider)] border-t border-solid pt-3'
     >
       <AccordionTrigger>词库</AccordionTrigger>
       <AccordionContent className='pt-2'>

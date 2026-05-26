@@ -2,7 +2,6 @@ import type { TargetedPointerEvent } from 'preact'
 import { useEffect, useRef, useState } from 'preact/hooks'
 
 import { cn } from '../lib/cn'
-import { getDesktopApi } from '../lib/desktop-api'
 import {
   dialogLeft,
   dialogOpen,
@@ -18,7 +17,7 @@ import { ReplacementPanel } from './replacement-panel'
 import { SettingsPopoverButton } from './settings-popover-button'
 
 const DIALOG_MIN_WIDTH = 280
-const DIALOG_MAX_WIDTH = 520
+const DIALOG_MAX_WIDTH = 680
 const DIALOG_VIEWPORT_MARGIN = 40
 const DIALOG_DEFAULT_BOTTOM = 88
 const DIALOG_EDGE_MARGIN = 8
@@ -32,10 +31,6 @@ function clampWidth(raw: number): number {
   return Math.max(DIALOG_MIN_WIDTH, Math.min(raw, viewportMax))
 }
 
-function clampDesktopWidth(raw: number): number {
-  return Math.max(DIALOG_MIN_WIDTH, Math.min(raw, DIALOG_MAX_WIDTH))
-}
-
 function isInteractiveTarget(target: EventTarget | null): boolean {
   return (
     target instanceof HTMLElement &&
@@ -45,26 +40,21 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
   )
 }
 
-export function Configurator({ desktop = false }: { desktop?: boolean }) {
+export function Configurator() {
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const [, setViewportVersion] = useState(0)
   const visible = dialogOpen.value
-  const width = desktop ? clampDesktopWidth(dialogWidth.value) : clampWidth(dialogWidth.value)
+  const width = clampWidth(dialogWidth.value)
   const customPosition = dialogLeft.value !== null && dialogTop.value !== null
-  const positionStyle = desktop
+  const positionStyle = customPosition
     ? {
-        left: '0',
-        top: 'var(--chatterbox-lite-desktop-content-top, 0px)',
+        left: `${clamp(dialogLeft.value ?? DIALOG_EDGE_MARGIN, DIALOG_EDGE_MARGIN, window.innerWidth - width - DIALOG_EDGE_MARGIN)}px`,
+        top: `${clamp(dialogTop.value ?? DIALOG_EDGE_MARGIN, DIALOG_EDGE_MARGIN, window.innerHeight - 120)}px`,
       }
-    : customPosition
-      ? {
-          left: `${clamp(dialogLeft.value ?? DIALOG_EDGE_MARGIN, DIALOG_EDGE_MARGIN, window.innerWidth - width - DIALOG_EDGE_MARGIN)}px`,
-          top: `${clamp(dialogTop.value ?? DIALOG_EDGE_MARGIN, DIALOG_EDGE_MARGIN, window.innerHeight - 120)}px`,
-        }
-      : {
-          right: '1rem',
-          bottom: `${DIALOG_DEFAULT_BOTTOM}px`,
-        }
+    : {
+        right: '1rem',
+        bottom: `${DIALOG_DEFAULT_BOTTOM}px`,
+      }
 
   useEffect(() => {
     const rerenderForViewport = () => {
@@ -100,35 +90,6 @@ export function Configurator({ desktop = false }: { desktop?: boolean }) {
     e.preventDefault()
 
     const target = e.currentTarget
-    if (desktop) {
-      target.setPointerCapture(e.pointerId)
-      void getDesktopApi().beginWindowDrag({ screenX: e.screenX, screenY: e.screenY })
-
-      const previousCursor = document.body.style.cursor
-      const previousUserSelect = document.body.style.userSelect
-      document.body.style.cursor = 'move'
-      document.body.style.userSelect = 'none'
-
-      const onMove = (ev: PointerEvent) => {
-        void getDesktopApi().dragWindow({ screenX: ev.screenX, screenY: ev.screenY })
-      }
-
-      const onEnd = (ev: PointerEvent) => {
-        target.releasePointerCapture(ev.pointerId)
-        target.removeEventListener('pointermove', onMove)
-        target.removeEventListener('pointerup', onEnd)
-        target.removeEventListener('pointercancel', onEnd)
-        document.body.style.cursor = previousCursor
-        document.body.style.userSelect = previousUserSelect
-        void getDesktopApi().endWindowDrag()
-      }
-
-      target.addEventListener('pointermove', onMove)
-      target.addEventListener('pointerup', onEnd)
-      target.addEventListener('pointercancel', onEnd)
-      return
-    }
-
     const dialog = dialogRef.current
     if (!dialog) return
 
@@ -173,33 +134,27 @@ export function Configurator({ desktop = false }: { desktop?: boolean }) {
     <div
       ref={dialogRef}
       id='chatterbox-lite-dialog'
-      data-chatterbox-lite-desktop={desktop ? 'true' : undefined}
-      data-chatterbox-lite-window-drag={desktop ? 'true' : undefined}
       className={cn(
         'pointer-events-auto fixed z-2147483647',
-        desktop ? 'max-h-none overflow-visible' : 'max-h-[calc(100vh-112px)] overflow-y-auto',
-        'rounded-xl border border-ga2 border-solid bg-bg1 text-[13px] text-[var(--Ga10,#18191c)]',
-        'shadow-[0_18px_48px_rgba(15,23,42,.22)]',
-        !desktop && !visible && 'hidden'
+        'max-h-[calc(100vh-112px)] overflow-y-auto',
+        'rounded-xl border border-[color:var(--chatterbox-lite-acrylic-border)] border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)] border-solid',
+        'bg-acrylic-panel text-[13px] text-[var(--Ga10,#172033)] shadow-[var(--chatterbox-lite-acrylic-shadow)]',
+        'backdrop-blur-xl backdrop-saturate-150',
+        !visible && 'hidden'
       )}
       style={{ ...positionStyle, width: `${width}px`, '--chatterbox-lite-dialog-width': `${width}px` }}
     >
-      <ResizeHandle desktop={desktop} />
+      <ResizeHandle />
       <div
         class='absolute top-0 right-3 left-3 z-10 h-3 cursor-move select-none'
         style={{ touchAction: 'none' }}
-        data-chatterbox-lite-window-drag={desktop ? 'true' : undefined}
         onPointerDown={startDrag}
         title='拖动移动窗口'
       />
 
-      <div
-        class='space-y-3 p-3'
-        data-chatterbox-lite-window-drag={desktop ? 'true' : undefined}
-        onPointerDown={startDrag}
-      >
+      <div class='space-y-3 p-3' onPointerDown={startDrag}>
         {showNormalSendPanel.value ? (
-          <NormalSendTab desktop={desktop} />
+          <NormalSendTab />
         ) : (
           <div class='flex justify-end'>
             <SettingsPopoverButton side='bottom' />
@@ -212,14 +167,14 @@ export function Configurator({ desktop = false }: { desktop?: boolean }) {
   )
 }
 
-function ResizeHandle({ desktop = false }: { desktop?: boolean }) {
+function ResizeHandle() {
   const onPointerDown = (e: TargetedPointerEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
 
     const target = e.currentTarget
     const startX = e.clientX
-    const startWidth = desktop ? clampDesktopWidth(dialogWidth.value) : clampWidth(dialogWidth.value)
+    const startWidth = clampWidth(dialogWidth.value)
     target.setPointerCapture(e.pointerId)
 
     const previousCursor = document.body.style.cursor
@@ -229,7 +184,7 @@ function ResizeHandle({ desktop = false }: { desktop?: boolean }) {
 
     const onMove = (ev: PointerEvent) => {
       const delta = startX - ev.clientX
-      dialogWidth.value = desktop ? clampDesktopWidth(startWidth + delta) : clampWidth(startWidth + delta)
+      dialogWidth.value = clampWidth(startWidth + delta)
     }
 
     const onEnd = (ev: PointerEvent) => {

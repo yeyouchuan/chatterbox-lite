@@ -1,0 +1,48 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "chatterbox-lite-raycast",
+  "title": "Arclight",
+  "description": "Send Bilibili Live danmaku through the local Chatterbox Lite helper.",
+  "icon": "icon.png",
+  "author": "yeyou",
+  "license": "AGPL-3.0",
+  "platforms": [
+    "macOS",
+    "Windows"
+  ],
+  "categories": [
+    "Communication"
+  ],
+  "commands": [
+    {
+      "name": "chatterbox",
+      "title": "Arclight",
+      "description": "Send text danmaku or room emotes to the active Bilibili Live room.",
+      "icon": "icon.png",
+      "mode": "view",
+      "keywords": [
+        "bilibili",
+        "live",
+        "danmaku",
+        "emote",
+        "emoji"
+      ]
+    }
+  ],
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "lint": "eslint src && prettier --check package.json eslint.config.js src/*.ts src/*.tsx"
+  },
+  "dependencies": {
+    "@raycast/api": "^1.104.18"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.1.1",
+    "@types/node": "22.19.17",
+    "@types/react": "19.0.10",
+    "eslint": "^10.4.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3"
+  }
+}

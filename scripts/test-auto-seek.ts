@@ -47,7 +47,6 @@ const storeSource = readFileSync('src/lib/store.ts', 'utf8')
 const audioOnlySource = readFileSync('src/lib/audio-only.ts', 'utf8')
 const bridgeProtocolSource = readFileSync('src/lib/bridge-protocol.ts', 'utf8')
 const bridgeAgentSource = readFileSync('src/lib/desktop-bridge-agent.ts', 'utf8')
-const desktopRuntimeSource = readFileSync('src/lib/desktop-runtime.ts', 'utf8')
 const settingsSnapshotSource = readFileSync('src/lib/settings-snapshot.ts', 'utf8')
 
 assert(
@@ -84,12 +83,8 @@ assert(
   'live page bridge agent should apply desktop auto-seek setting updates'
 )
 assert(
-  desktopRuntimeSource.includes('syncDesktopAutoSeekSettings'),
-  'desktop runtime should expose an auto-seek settings sync helper'
-)
-assert(
-  settingsSource.includes('syncDesktopAutoSeekSettings'),
-  'settings panel should sync auto-seek changes from desktop to the live page'
+  !settingsSource.includes('syncDesktopAutoSeekSettings'),
+  'settings panel should not depend on the removed desktop renderer runtime'
 )
 assert(settingsSnapshotSource.includes('autoSeekEnabled'), 'settings snapshot should include auto-seek enabled state')
 assert(

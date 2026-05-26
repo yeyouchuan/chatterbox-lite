@@ -1,6 +1,5 @@
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react'
 
-import { syncDesktopAutoSeekSettings } from '../lib/desktop-runtime'
 import {
   autoSeekBufferThreshold,
   autoSeekCurrentBufferLen,
@@ -50,11 +49,9 @@ export function SettingsPanel() {
     Math.abs(autoSeekCurrentRate.value - 1) < 0.005 ? '#666' : autoSeekCurrentRate.value > 1 ? '#e8a200' : '#f44'
   const updateAutoSeekEnabled = (value: boolean) => {
     autoSeekEnabled.value = value
-    syncDesktopAutoSeekSettings()
   }
   const updateAutoSeekBufferThreshold = (value: number) => {
     autoSeekBufferThreshold.value = value
-    syncDesktopAutoSeekSettings()
   }
 
   return (
@@ -116,7 +113,9 @@ export function SettingsPanel() {
             danmakuDirectEnabled.value = v
           }}
         />
-        <div class='mt-1 border-ga2 border-t border-t-solid pt-1 font-bold text-[12px]'>播放器追帧</div>
+        <div class='mt-1 border-[color:var(--chatterbox-lite-acrylic-divider)] border-t border-t-solid pt-1 font-bold text-[12px]'>
+          播放器追帧
+        </div>
         <SettingCheckbox
           label='启用自动追帧'
           checked={autoSeekEnabled.value}
@@ -151,7 +150,7 @@ export function SettingsPanel() {
           <span>秒</span>
         </label>
         {autoSeekEnabled.value && (
-          <div class='rounded border border-ga2 border-solid bg-ga1 p-1.5 text-[12px]'>
+          <div class='rounded border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid bg-acrylic-control p-1.5 text-[12px] backdrop-blur-md'>
             <div>
               当前延迟{' '}
               <span style={{ color: autoSeekDelayColor, fontWeight: 600 }}>

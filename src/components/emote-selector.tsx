@@ -12,7 +12,7 @@ import { cachedEmoticonPackages, pinnedEmoticonUniques } from '../lib/store'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, type PopoverSide, PopoverTrigger } from './ui/popover'
 
-const EMOTE_GRID_CLASS = 'grid grid-cols-6 gap-x-1 gap-y-0.5'
+const EMOTE_GRID_CLASS = 'grid grid-cols-[repeat(auto-fit,minmax(52px,1fr))] gap-x-1 gap-y-0.5'
 
 function normalizeImageUrl(url: string): string {
   if (url.startsWith('//')) return `https:${url}`
@@ -99,7 +99,7 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
           }}
           class={cn(
             'absolute top-px left-px z-10 m-0 flex size-4 items-center justify-center',
-            'rounded-sm border border-ga3 border-solid bg-bg1 p-0 text-[11px] leading-none',
+            'rounded-sm border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid bg-acrylic-control p-0 text-[11px] leading-none backdrop-blur-md',
             'cursor-pointer transition hover:border-brand hover:text-brand',
             isPinned ? 'border-brand text-brand' : 'text-ga5'
           )}
@@ -157,7 +157,7 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
       </PopoverTrigger>
       <PopoverContent side={side} align='start' portal className='w-[calc(var(--chatterbox-lite-dialog-width)-24px)]'>
         <div
-          class='overflow-y-auto p-1.5 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-ga4 [&::-webkit-scrollbar]:w-1.5'
+          class='overflow-y-auto p-1.5 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-brand/35 [&::-webkit-scrollbar]:w-1.5'
           style={{ maxHeight: 'min(360px, var(--chatterbox-lite-popover-max-height, 44vh))' }}
         >
           {packages.length === 0 ? (
@@ -167,7 +167,7 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
           ) : (
             <>
               {pinnedEmoticons.length > 0 && (
-                <div class='mb-3 border-ga2 border-b border-solid pb-3'>
+                <div class='mb-3 border-[color:var(--chatterbox-lite-acrylic-divider)] border-b border-solid pb-3'>
                   <div class='mb-1 font-bold text-[11px] text-ga6'>
                     常用置顶
                     <span class='ml-2 font-normal'>({pinnedEmoticons.length})</span>

@@ -4,7 +4,6 @@ import { useRef } from 'preact/hooks'
 
 import { tryAiEvasion } from '../lib/ai-evasion'
 import { buildBlockedRetryMessages, buildReplacementRetryMessage, isBlockedDanmakuError } from '../lib/blocked-retry'
-import { desktopBridgeState } from '../lib/desktop-runtime'
 import {
   formatLockedEmoticonReject,
   formatUnavailableEmoticonReject,
@@ -29,21 +28,7 @@ import { SettingsPopoverButton } from './settings-popover-button'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
 
-function BridgeIndicator() {
-  const connected = desktopBridgeState.value.connected
-  return (
-    <span
-      role='status'
-      aria-label={connected ? '已连接直播页' : '未连接直播页'}
-      title={connected ? '已连接直播页' : '未连接直播页'}
-      class='flex h-[18px] w-3 items-center justify-center self-center'
-    >
-      <span class={connected ? 'size-2.5 rounded-full bg-brand' : 'size-2.5 rounded-full bg-danger'} />
-    </span>
-  )
-}
-
-export function NormalSendTab({ inputOnly = false, desktop = false }: { inputOnly?: boolean; desktop?: boolean }) {
+export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
   const sending = useSignal(false)
   const liking = useSignal(false)
   const historyState = useSignal<SendHistoryState>({ index: -1, draft: '' })
@@ -251,7 +236,6 @@ export function NormalSendTab({ inputOnly = false, desktop = false }: { inputOnl
           data-chatterbox-lite-drag-surface='true'
         >
           <EmoteSelector side='top' />
-          {desktop && <BridgeIndicator />}
         </div>
         <div class='flex shrink-0 items-center gap-1'>
           <SettingsPopoverButton side='top' />
@@ -259,7 +243,7 @@ export function NormalSendTab({ inputOnly = false, desktop = false }: { inputOnl
             size='sm'
             variant='outline'
             disabled={liking.value}
-            className='px-2 leading-[1.2] [&_svg]:block [&_svg]:size-3.5'
+            className='w-6 px-0 leading-[1.2] [&_svg]:block [&_svg]:size-3.5'
             aria-label='点赞 30 次'
             title='点赞 30 次'
             onClick={() => void sendLike()}
@@ -269,7 +253,6 @@ export function NormalSendTab({ inputOnly = false, desktop = false }: { inputOnl
             ) : (
               <HeartIcon weight='fill' aria-hidden='true' />
             )}
-            <span class='inline-flex items-center leading-none'>x30</span>
           </Button>
           <Button size='sm' disabled={sending.value || !fasongText.value.trim()} onClick={() => void sendMessage()}>
             {sending.value ? (

@@ -73,7 +73,7 @@ export function AccordionTrigger({ className, children, ...props }: AccordionTri
       class={cn(
         'flex items-center justify-between gap-2',
         'cursor-pointer select-none font-bold',
-        'rounded-md bg-ga1 px-1 py-0.5',
+        'rounded-md bg-acrylic-control px-1 py-0.5 backdrop-blur-md',
         'outline-none transition-[background-color,outline-color,box-shadow] duration-150 ease-out',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2',
         'focus-visible:ring-2 focus-visible:ring-brand/15',

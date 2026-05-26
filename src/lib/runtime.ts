@@ -2,7 +2,7 @@ import type { BilibiliEmoticonPackage, SendDanmakuResult } from '../types'
 import type { BridgeLiveLikeResult, BridgeRoomState, BridgeSettingsSnapshot } from './bridge-protocol'
 
 export interface ChatterboxRuntime {
-  mode: 'userscript' | 'desktop'
+  mode: 'userscript'
   ensureRoomState: () => Promise<BridgeRoomState>
   sendDanmaku: (message: string) => Promise<SendDanmakuResult>
   sendLiveLike: () => Promise<BridgeLiveLikeResult>

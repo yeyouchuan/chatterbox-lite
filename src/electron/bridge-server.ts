@@ -7,6 +7,7 @@ import {
   BRIDGE_PROTOCOL_VERSION,
   type BridgeAgentHelloRequest,
   type BridgeCommand,
+  type BridgeCommandEnvelope,
   type BridgeCommandPayloads,
   type BridgeCommandResults,
   type BridgeCommandType,
@@ -230,6 +231,11 @@ export class BridgeServer {
         return
       }
 
+      if (request.method === 'POST' && url.pathname === '/command') {
+        await this.handleExternalCommand(request, response)
+        return
+      }
+
       if (request.method === 'POST' && url.pathname === '/agent/hello') {
         await this.handleHello(request, response)
         return
@@ -248,6 +254,28 @@ export class BridgeServer {
       sendError(response, 404, 'Not found')
     } catch (err) {
       sendError(response, 500, err instanceof Error ? err.message : String(err))
+    }
+  }
+
+  private async handleExternalCommand(request: IncomingMessage, response: ServerResponse): Promise<void> {
+    if (request.headers.origin) {
+      sendError(response, 403, 'POST /command does not accept browser Origin requests')
+      return
+    }
+
+    const envelope = await readBody<BridgeCommandEnvelope>(request)
+    if (!envelope || typeof envelope.type !== 'string' || typeof envelope.payload !== 'object') {
+      sendError(response, 400, 'Invalid bridge command envelope')
+      return
+    }
+
+    try {
+      const result = await this.sendCommand(envelope.type, envelope.payload)
+      sendJson(response, 200, { ok: true, result })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      const status = message.includes('No Bilibili live page bridge connected') ? 503 : 500
+      sendError(response, status, message)
     }
   }
 

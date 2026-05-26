@@ -21,8 +21,13 @@ assert(
   'portal root should receive dialog width CSS variable'
 )
 assert(
-  configuratorSource.includes("'rounded-xl border border-ga2"),
-  'main dialog should use a softer outer radius and border'
+  configuratorSource.includes('const DIALOG_MAX_WIDTH = 680'),
+  'main dialog should allow a wider manually resized Raycast-style panel'
+)
+assert(configuratorSource.includes('bg-acrylic-panel'), 'main dialog should use the acrylic panel surface')
+assert(
+  configuratorSource.includes('border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)]'),
+  'main dialog should weaken the bottom border'
 )
 assert(configuratorSource.includes("addEventListener('resize'"), 'dialog should re-clamp on viewport resize')
 assert(
@@ -59,12 +64,27 @@ for (const [name, source] of [
 
 assert(normalSendSource.includes('tabular-nums'), 'send character count should use stable tabular numbers')
 assert(buttonSource.includes('gap-1.5 rounded-lg'), 'buttons should use the softer control radius')
-assert(textareaSource.includes('rounded-lg border border-ga3'), 'textareas should use a quieter border')
+assert(buttonSource.includes('bg-acrylic-control'), 'secondary buttons should use acrylic control surfaces')
+assert(buttonSource.includes('bg-brand text-white'), 'primary buttons should keep a blue branded fill')
+assert(
+  textareaSource.includes('bg-acrylic-control text-inherit backdrop-blur-md'),
+  'textareas should use acrylic control surfaces'
+)
 assert(textareaSource.includes('px-2 py-1.5'), 'textareas should keep content comfortably away from the border')
-assert(inputSource.includes('rounded-lg border border-ga4'), 'inputs should use the softer control radius')
-assert(popoverSource.includes('rounded-lg border border-ga2'), 'popovers should use a quieter border')
+assert(
+  inputSource.includes('bg-acrylic-control text-inherit backdrop-blur-md'),
+  'inputs should use acrylic control surfaces'
+)
+assert(popoverSource.includes('bg-acrylic-popover'), 'popovers should use the acrylic popover surface')
+assert(
+  popoverSource.includes('border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)]'),
+  'popovers should weaken the bottom border'
+)
 assert(popoverSource.includes('overflow-visible'), 'popover content should not clip focus rings')
 assert(!popoverSource.includes('pointer-events-auto overflow-hidden'), 'popover content should not clip focus rings')
+assert(stylesSource.includes('--chatterbox-lite-acrylic-panel'), 'styles should define the acrylic panel token')
+assert(stylesSource.includes('--chatterbox-lite-acrylic-control'), 'styles should define the acrylic control token')
+assert(stylesSource.includes('--color-brand: #2563d9'), 'styles should use the Raycast-like blue brand color')
 assert(stylesSource.includes('-webkit-font-smoothing: antialiased'), 'shadow root should enable font smoothing')
 assert(
   stylesSource.includes('text-rendering: optimizeLegibility'),
@@ -75,7 +95,8 @@ assert(directSource.includes('reattach'), 'direct danmaku binding should reattac
 assert(toggleSource.includes('right-2 bottom-3'), 'floating buttons should sit closer to the bottom-right corner')
 assert(normalSendSource.includes('sendLiveLike'), 'send panel should expose the live like action')
 assert(normalSendSource.includes('HeartIcon'), 'live like button should use a recognizable like icon')
-assert(normalSendSource.includes('x30'), 'send panel should keep the one-click 30-like count')
+assert(!normalSendSource.includes('>x30</span>'), 'live like button should not render the 30-like text label')
+assert(normalSendSource.includes("className='w-6 px-0"), 'live like button should match the settings icon size')
 assert(normalSendSource.includes('<SettingsPopoverButton'), 'send panel should render the settings action next to like')
 assert(settingsButtonSource.includes('GearSixIcon'), 'settings action should use a recognizable settings icon')
 assert(!configuratorSource.includes('XIcon'), 'main dialog should not render a close button')

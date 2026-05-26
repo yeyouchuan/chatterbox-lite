@@ -231,9 +231,9 @@ export function PopoverContent({
         portal ? 'fixed z-2147483647' : 'absolute z-50',
         !portal && sideClass,
         !portal && alignClass,
-        'rounded-lg border border-ga2 border-solid',
-        'bg-bg1 text-inherit',
-        'shadow-[0_12px_28px_rgba(15,23,42,.18)]',
+        'rounded-lg border border-[color:var(--chatterbox-lite-acrylic-border)] border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)] border-solid',
+        'bg-acrylic-popover text-inherit shadow-[var(--chatterbox-lite-acrylic-popover-shadow)]',
+        'backdrop-blur-xl backdrop-saturate-150',
         'pointer-events-auto overflow-visible outline-none',
         className
       )}

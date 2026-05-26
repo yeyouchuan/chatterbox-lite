@@ -18,7 +18,7 @@ export function LogPanel() {
       onOpenChange={v => {
         logPanelOpen.value = v
       }}
-      className='border-ga2 border-t border-solid pt-3'
+      className='border-[color:var(--chatterbox-lite-acrylic-divider)] border-t border-solid pt-3'
     >
       <AccordionTrigger>日志</AccordionTrigger>
       <AccordionContent className='pt-2'>
