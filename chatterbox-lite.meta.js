@@ -6,8 +6,8 @@
 // @description  A slim Bilibili Live danmaku helper with audio-only mode, keyword replacement, and manual sending.
 // @license      AGPL-3.0
 // @icon         https://laplace.live/favicon.ico
-// @downloadURL  https://yeyouchuan.github.io/chatterbox-lite/chatterbox-lite.user.js
-// @updateURL    https://yeyouchuan.github.io/chatterbox-lite/chatterbox-lite.meta.js
+// @downloadURL  https://raw.githubusercontent.com/yeyouchuan/chatterbox-lite/gh-pages/chatterbox-lite.user.js
+// @updateURL    https://raw.githubusercontent.com/yeyouchuan/chatterbox-lite/gh-pages/chatterbox-lite.meta.js
 // @match        https://live.bilibili.com/*
 // @connect      127.0.0.1
 // @connect      localhost
