@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Chatterbox Lite
 // @namespace    https://greasyfork.org/users/1524935
-// @version      2.4.1
+// @version      3.0.0
 // @author       laplace-live; Chatterbox Lite fork
 // @description  A slim Bilibili Live danmaku helper with audio-only mode, keyword replacement, and manual sending.
 // @license      AGPL-3.0
