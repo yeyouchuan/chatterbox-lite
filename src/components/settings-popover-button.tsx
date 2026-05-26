@@ -14,7 +14,13 @@ export function SettingsPopoverButton({ side = 'top', align = 'end' }: { side?: 
       }}
     >
       <PopoverTrigger>
-        <Button variant='outline' size='sm' className='w-6 px-0' aria-label='打开设置' title='设置'>
+        <Button
+          variant={settingsPanelOpen.value ? 'default' : 'outline'}
+          size='sm'
+          className='w-6 px-0'
+          aria-label='打开设置'
+          title='设置'
+        >
           <GearSixIcon size={15} weight='bold' aria-hidden='true' />
         </Button>
       </PopoverTrigger>

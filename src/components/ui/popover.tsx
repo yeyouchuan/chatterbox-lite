@@ -232,7 +232,7 @@ export function PopoverContent({
         !portal && sideClass,
         !portal && alignClass,
         'rounded-lg border border-[color:var(--chatterbox-lite-acrylic-border)] border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)] border-solid',
-        'bg-acrylic-popover text-inherit shadow-[var(--chatterbox-lite-acrylic-popover-shadow)]',
+        'bg-acrylic-popover text-[color:var(--chatterbox-lite-text)] shadow-[var(--chatterbox-lite-acrylic-popover-shadow)]',
         'backdrop-blur-xl backdrop-saturate-150',
         'pointer-events-auto overflow-visible outline-none',
         className

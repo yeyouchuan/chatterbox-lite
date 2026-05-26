@@ -82,9 +82,38 @@ assert(
 )
 assert(popoverSource.includes('overflow-visible'), 'popover content should not clip focus rings')
 assert(!popoverSource.includes('pointer-events-auto overflow-hidden'), 'popover content should not clip focus rings')
+assert(
+  stylesSource.includes('--chatterbox-lite-text: #172033'),
+  'styles should pin plugin text color away from page theme variables'
+)
+assert(
+  stylesSource.includes('--Ga10: var(--chatterbox-lite-text)'),
+  'styles should override inherited Bilibili text tokens'
+)
+assert(
+  stylesSource.includes('--Ga6: var(--chatterbox-lite-muted)'),
+  'styles should override inherited Bilibili muted tokens'
+)
 assert(stylesSource.includes('--chatterbox-lite-acrylic-panel'), 'styles should define the acrylic panel token')
 assert(stylesSource.includes('--chatterbox-lite-acrylic-control'), 'styles should define the acrylic control token')
-assert(stylesSource.includes('--color-brand: #2563d9'), 'styles should use the Raycast-like blue brand color')
+assert(stylesSource.includes('--color-brand: #479fd1'), 'styles should use the requested Arclight blue brand color')
+assert(
+  configuratorSource.includes('text-[color:var(--chatterbox-lite-text)]'),
+  'main dialog should force readable plugin text'
+)
+assert(popoverSource.includes('text-[color:var(--chatterbox-lite-text)]'), 'popovers should force readable plugin text')
+assert(
+  settingsButtonSource.includes("variant={settingsPanelOpen.value ? 'default' : 'outline'}"),
+  'settings button should show an active color while its popover is open'
+)
+assert(
+  normalSendSource.includes('text-[color:var(--chatterbox-lite-muted)]'),
+  'send character count should use a readable muted color'
+)
+assert(
+  !normalSendSource.includes('text-[var(--Ga7,#5f6670)]'),
+  'send character count should not inherit page-provided muted tokens'
+)
 assert(stylesSource.includes('-webkit-font-smoothing: antialiased'), 'shadow root should enable font smoothing')
 assert(
   stylesSource.includes('text-rendering: optimizeLegibility'),
@@ -95,6 +124,10 @@ assert(directSource.includes('reattach'), 'direct danmaku binding should reattac
 assert(toggleSource.includes('right-2 bottom-3'), 'floating buttons should sit closer to the bottom-right corner')
 assert(normalSendSource.includes('sendLiveLike'), 'send panel should expose the live like action')
 assert(normalSendSource.includes('HeartIcon'), 'live like button should use a recognizable like icon')
+assert(
+  normalSendSource.includes('text-[color:var(--chatterbox-lite-control-icon)]'),
+  'icon-only actions should keep readable icons'
+)
 assert(!normalSendSource.includes('>x30</span>'), 'live like button should not render the 30-like text label')
 assert(normalSendSource.includes("className='w-6 px-0"), 'live like button should match the settings icon size')
 assert(normalSendSource.includes('<SettingsPopoverButton'), 'send panel should render the settings action next to like')

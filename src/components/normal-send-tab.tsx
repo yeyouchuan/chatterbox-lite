@@ -207,7 +207,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
           placeholder='输入弹幕内容'
           className='h-20 resize-none pr-10'
         />
-        <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[var(--Ga7,#5f6670)] tabular-nums'>
+        <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[color:var(--chatterbox-lite-muted)] tabular-nums'>
           {fasongText.value.length}
         </div>
       </div>
@@ -226,7 +226,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
           placeholder='输入弹幕内容'
           className='h-20 resize-none pr-10'
         />
-        <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[var(--Ga7,#5f6670)] tabular-nums'>
+        <div class='pointer-events-none absolute right-2 bottom-1.5 text-[11px] text-[color:var(--chatterbox-lite-muted)] tabular-nums'>
           {fasongText.value.length}
         </div>
       </div>
@@ -243,7 +243,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
             size='sm'
             variant='outline'
             disabled={liking.value}
-            className='w-6 px-0 leading-[1.2] [&_svg]:block [&_svg]:size-3.5'
+            className='w-6 px-0 text-[color:var(--chatterbox-lite-control-icon)] leading-[1.2] [&_svg]:block [&_svg]:size-3.5'
             aria-label='点赞 30 次'
             title='点赞 30 次'
             onClick={() => void sendLike()}

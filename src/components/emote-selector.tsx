@@ -100,8 +100,10 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
           class={cn(
             'absolute top-px left-px z-10 m-0 flex size-4 items-center justify-center',
             'rounded-sm border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid bg-acrylic-control p-0 text-[11px] leading-none backdrop-blur-md',
-            'cursor-pointer transition hover:border-brand hover:text-brand',
-            isPinned ? 'border-brand text-brand' : 'text-ga5'
+            'cursor-pointer transition hover:border-[color:var(--chatterbox-lite-pin-border)] hover:text-[color:var(--chatterbox-lite-pin-active)]',
+            isPinned
+              ? 'border-[color:var(--chatterbox-lite-pin-border)] text-[color:var(--chatterbox-lite-pin-active)]'
+              : 'text-ga5'
           )}
         >
           <PushPinIcon size={11} weight={isPinned ? 'fill' : 'regular'} aria-hidden='true' />

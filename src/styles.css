@@ -4,15 +4,25 @@
 @source './lib';
 
 :host {
+  --chatterbox-lite-text: #172033;
+  --chatterbox-lite-muted: #64748b;
+  --chatterbox-lite-subtle: #8da0b5;
+  --chatterbox-lite-control-icon: #5b6f86;
+  --chatterbox-lite-pin-active: #5f7890;
+  --chatterbox-lite-pin-border: rgba(95, 120, 144, 0.46);
   --chatterbox-lite-acrylic-panel: rgba(242, 248, 255, 0.82);
   --chatterbox-lite-acrylic-popover: rgba(244, 249, 255, 0.88);
   --chatterbox-lite-acrylic-control: rgba(255, 255, 255, 0.48);
   --chatterbox-lite-acrylic-control-strong: rgba(255, 255, 255, 0.66);
-  --chatterbox-lite-acrylic-border: rgba(78, 118, 170, 0.26);
-  --chatterbox-lite-acrylic-border-bottom: rgba(78, 118, 170, 0.07);
-  --chatterbox-lite-acrylic-divider: rgba(78, 118, 170, 0.16);
+  --chatterbox-lite-acrylic-border: rgba(71, 159, 209, 0.26);
+  --chatterbox-lite-acrylic-border-bottom: rgba(71, 159, 209, 0.07);
+  --chatterbox-lite-acrylic-divider: rgba(71, 159, 209, 0.16);
   --chatterbox-lite-acrylic-shadow: 0 24px 64px rgba(29, 54, 89, 0.2), 0 4px 18px rgba(29, 54, 89, 0.1);
   --chatterbox-lite-acrylic-popover-shadow: 0 18px 44px rgba(29, 54, 89, 0.18), 0 2px 10px rgba(29, 54, 89, 0.08);
+  --Ga5: var(--chatterbox-lite-subtle);
+  --Ga6: var(--chatterbox-lite-muted);
+  --Ga7: var(--chatterbox-lite-muted);
+  --Ga10: var(--chatterbox-lite-text);
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -59,7 +69,7 @@ summary,
   --color-acrylic-control: var(--chatterbox-lite-acrylic-control);
   --color-acrylic-control-strong: var(--chatterbox-lite-acrylic-control-strong);
 
-  --color-brand: #2563d9;
+  --color-brand: #479fd1;
   --color-danger: #c83f46;
-  --color-link: #1d5fd2;
+  --color-link: #2f82bd;
 }
