@@ -19,6 +19,14 @@ assert(
 )
 assert(releaseWorkflow.includes('workflow_dispatch:'), 'GitHub Pages workflow should support manual deploys')
 assert(
+  !releaseWorkflow.includes('oven-sh/setup-bun'),
+  'GitHub Pages workflow should not depend on the setup-bun action tarball being downloadable'
+)
+assert(
+  releaseWorkflow.includes('https://bun.sh/install') && releaseWorkflow.includes('$HOME/.bun/bin'),
+  'GitHub Pages workflow should install Bun directly and put it on PATH'
+)
+assert(
   releaseWorkflow.includes(githubPagesBaseUrl),
   'GitHub Pages workflow should publish builds with a stable hosted userscript URL'
 )
