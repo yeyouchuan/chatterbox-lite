@@ -15,6 +15,18 @@
   --chatterbox-lite-active-control-text: #0b477a;
   --chatterbox-lite-pin-active: #5f7890;
   --chatterbox-lite-pin-border: rgba(95, 120, 144, 0.46);
+  --chatterbox-lite-status-success: #2f9f78;
+  --chatterbox-lite-status-warning: #b57c00;
+  --chatterbox-lite-status-danger: #c83f46;
+  --chatterbox-lite-status-neutral: #64748b;
+  --chatterbox-lite-audio-active: #e65f8b;
+  --chatterbox-lite-audio-inactive: #7a8da0;
+  --chatterbox-lite-lock-badge: rgba(31, 41, 55, 0.72);
+  --chatterbox-lite-direct-action: rgba(20, 28, 38, 0.5);
+  --chatterbox-lite-direct-action-border: rgba(255, 255, 255, 0.28);
+  --chatterbox-lite-toast-surface: rgba(244, 249, 255, 0.92);
+  --chatterbox-lite-toast-border: rgba(71, 159, 209, 0.24);
+  --chatterbox-lite-toast-shadow: 0 14px 36px rgba(29, 54, 89, 0.18), 0 2px 8px rgba(29, 54, 89, 0.1);
   --chatterbox-lite-acrylic-panel: rgba(242, 248, 255, 0.82);
   --chatterbox-lite-acrylic-panel-gradient: linear-gradient(
     180deg,
@@ -55,6 +67,18 @@
   --chatterbox-lite-active-control-text: #d7effc;
   --chatterbox-lite-pin-active: #aebdc6;
   --chatterbox-lite-pin-border: rgba(174, 189, 198, 0.42);
+  --chatterbox-lite-status-success: #76d8a1;
+  --chatterbox-lite-status-warning: #f0c36a;
+  --chatterbox-lite-status-danger: #ff8b96;
+  --chatterbox-lite-status-neutral: #a7b6c0;
+  --chatterbox-lite-audio-active: #f279a3;
+  --chatterbox-lite-audio-inactive: #627381;
+  --chatterbox-lite-lock-badge: rgba(0, 0, 0, 0.66);
+  --chatterbox-lite-direct-action: rgba(255, 255, 255, 0.1);
+  --chatterbox-lite-direct-action-border: rgba(255, 255, 255, 0.22);
+  --chatterbox-lite-toast-surface: rgba(34, 43, 54, 0.94);
+  --chatterbox-lite-toast-border: rgba(185, 211, 226, 0.18);
+  --chatterbox-lite-toast-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), 0 2px 10px rgba(0, 0, 0, 0.18);
   --chatterbox-lite-acrylic-panel: rgba(28, 35, 46, 0.84);
   --chatterbox-lite-acrylic-panel-gradient: linear-gradient(180deg, rgba(42, 50, 64, 0.52), rgba(25, 38, 43, 0.28));
   --chatterbox-lite-acrylic-popover: rgba(31, 39, 50, 0.88);
@@ -115,6 +139,6 @@ summary,
   --color-acrylic-active: var(--chatterbox-lite-active-control);
 
   --color-brand: #479fd1;
-  --color-danger: #c83f46;
+  --color-danger: var(--chatterbox-lite-status-danger);
   --color-link: #2f82bd;
 }

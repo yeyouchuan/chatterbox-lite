@@ -46,7 +46,9 @@ export function AudioOnlyButton() {
         // Pink in audio-only mode (matches bilibili's brand accent and
         // the icon-fill we use elsewhere); muted gray otherwise so the
         // primary `弹幕助手` button keeps visual priority.
-        active ? 'border-[#FF6699] bg-[#FF6699]' : 'border-ga6 bg-ga6'
+        active
+          ? 'border-[color:var(--chatterbox-lite-audio-active)] bg-[color:var(--chatterbox-lite-audio-active)]'
+          : 'border-[color:var(--chatterbox-lite-audio-inactive)] bg-[color:var(--chatterbox-lite-audio-inactive)]'
       )}
     >
       {active ? '恢复视频' : '仅音频'}

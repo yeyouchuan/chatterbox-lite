@@ -22,24 +22,27 @@ Build output is written to `dist/`.
 
 The production userscript is static. You do not need to keep the local dev server running after it is hosted.
 
-### GitHub Pages
+### Raw GitHub branch
 
 This repository includes a Pages workflow that builds `dist/` on every push to `master`.
+Tampermonkey updates should use the raw `gh-pages` branch files because GitHub Pages can cache stale userscript metadata.
 
 1. Push this project to your own GitHub repository.
-2. In the repository settings, enable GitHub Pages with **GitHub Actions** as the source.
+2. Publish the generated `dist/` files to the `gh-pages` branch.
 3. Open:
 
 ```text
-https://<github-user>.github.io/<repo-name>/chatterbox-lite.user.js
+https://raw.githubusercontent.com/<github-user>/<repo-name>/gh-pages/chatterbox-lite.user.js
 ```
 
 Install that URL in Tampermonkey. Hosted builds include:
 
 ```text
-@downloadURL https://<github-user>.github.io/<repo-name>/chatterbox-lite.user.js
-@updateURL   https://<github-user>.github.io/<repo-name>/chatterbox-lite.meta.js
+@downloadURL https://raw.githubusercontent.com/<github-user>/<repo-name>/gh-pages/chatterbox-lite.user.js
+@updateURL   https://raw.githubusercontent.com/<github-user>/<repo-name>/gh-pages/chatterbox-lite.meta.js
 ```
+
+GitHub Pages can still host the same static files as a backup, but the raw URLs are the canonical update path.
 
 Local builds omit those fields unless `USERSCRIPT_BASE_URL` is set:
 

@@ -10,6 +10,7 @@ import { ensureRemoteKeywordsSynced } from '../lib/replacement'
 import { setRuntimeAdapter } from '../lib/runtime'
 import { userscriptRuntime } from '../lib/userscript-runtime'
 import { Configurator } from './configurator'
+import { ToastViewport } from './toast-viewport'
 import { ToggleButton } from './toggle-button'
 
 export function App() {
@@ -48,6 +49,7 @@ export function App() {
     <>
       <ToggleButton />
       <Configurator />
+      <ToastViewport />
     </>
   )
 }

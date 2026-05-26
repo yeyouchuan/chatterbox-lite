@@ -29,6 +29,9 @@ assert(
   'open emote button should not use the full brand primary state'
 )
 assert(source.includes('--chatterbox-lite-pin-active'), 'pinned emote buttons should use a muted pin color')
+assert(source.includes('recentEmoticons'), 'emote popover should render a recent emote section')
+assert(source.includes('最近表情'), 'emote popover should label the recent section')
+assert(source.includes('getRecentEmoticons'), 'recent emotes should be resolved from visible packages')
 assert(
   !source.includes("isPinned ? 'border-brand text-brand'"),
   'pinned emote buttons should not use the full brand blue'

@@ -1,9 +1,10 @@
 import { CircleNotchIcon, HeartIcon, PaperPlaneTiltIcon } from '@phosphor-icons/react'
 import { useSignal } from '@preact/signals'
-import { useRef } from 'preact/hooks'
+import { useEffect, useRef } from 'preact/hooks'
 
 import { tryAiEvasion } from '../lib/ai-evasion'
 import { buildBlockedRetryMessages, buildReplacementRetryMessage, isBlockedDanmakuError } from '../lib/blocked-retry'
+import { addRecentEmoticon } from '../lib/emote-picker'
 import {
   formatLockedEmoticonReject,
   formatUnavailableEmoticonReject,
@@ -21,12 +22,51 @@ import {
 } from '../lib/replacement'
 import { getRuntimeAdapter } from '../lib/runtime'
 import { addSendHistoryEntry, navigateSendHistory, type SendHistoryState } from '../lib/send-history'
-import { blockedRetryEnabled, fasongText, maxLength, msgSendInterval, sendHistory } from '../lib/store'
+import { sendQueueStatus } from '../lib/send-queue'
+import {
+  blockedRetryEnabled,
+  fasongText,
+  maxLength,
+  msgSendInterval,
+  recentEmoticonUniques,
+  sendHistory,
+} from '../lib/store'
+import { showToast } from '../lib/toast'
 import { formatDanmakuError, processMessages } from '../lib/utils'
 import { EmoteSelector } from './emote-selector'
 import { SettingsPopoverButton } from './settings-popover-button'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
+
+function QueueStatusBadge() {
+  const now = useSignal(Date.now())
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      now.value = Date.now()
+    }, 200)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const status = sendQueueStatus.value
+  const waitMs = status.waitingUntil === null ? 0 : Math.max(0, status.waitingUntil - now.value)
+  const label =
+    waitMs > 0
+      ? `等待 ${(waitMs / 1000).toFixed(1)}s`
+      : status.depth > 0
+        ? `队列 ${status.depth}`
+        : status.processing
+          ? '发送中'
+          : null
+
+  if (!label) return null
+
+  return (
+    <div class='rounded-md border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid bg-acrylic-control px-1.5 py-0.5 text-[11px] text-[color:var(--chatterbox-lite-muted)] leading-none backdrop-blur-md'>
+      {label}
+    </div>
+  )
+}
 
 export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
   const sending = useSignal(false)
@@ -40,11 +80,13 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
     const originalMessage = fasongText.value.trim()
     if (!originalMessage) {
       appendLog('⚠️ 消息内容不能为空')
+      showToast({ type: 'warning', title: '消息内容不能为空' })
       return
     }
 
     if (isLockedEmoticon(originalMessage)) {
       appendLog(formatLockedEmoticonReject(originalMessage, '手动表情'))
+      showToast({ type: 'warning', title: '表情暂不可用', description: originalMessage })
       fasongText.value = ''
       focusTextareaAfterSend(textareaRef.current)
       return
@@ -52,6 +94,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
 
     if (isUnavailableEmoticon(originalMessage)) {
       appendLog(formatUnavailableEmoticonReject(originalMessage, '手动表情'))
+      showToast({ type: 'warning', title: '表情不可发送', description: originalMessage })
       fasongText.value = ''
       focusTextareaAfterSend(textareaRef.current)
       return
@@ -141,10 +184,19 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
         fasongText.value = ''
         historyState.value = { index: -1, draft: '' }
         sendHistory.value = addSendHistoryEntry(sendHistory.value, originalMessage)
+        if (isEmote) recentEmoticonUniques.value = addRecentEmoticon(recentEmoticonUniques.value, originalMessage)
+        showToast({
+          type: 'success',
+          title: isEmote ? '表情已发送' : '弹幕已发送',
+          description: total > 1 ? `${total} 条分段弹幕` : originalMessage,
+        })
+      } else {
+        showToast({ type: 'error', title: '弹幕未全部发送成功', description: originalMessage })
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       appendLog(`🔴 发送出错：${msg}`)
+      showToast({ type: 'error', title: '发送出错', description: msg })
     } finally {
       sending.value = false
       focusTextareaAfterSend(textareaRef.current)
@@ -164,12 +216,15 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
       const result = await getRuntimeAdapter().sendLiveLike()
       if (result.success) {
         appendLog(`👍 点赞x${result.count} 已发送`)
+        showToast({ type: 'success', title: '点赞已发送', description: `${result.count} 次` })
       } else {
         appendLog(`❌ 点赞失败：${formatDanmakuError(result.error)}`)
+        showToast({ type: 'error', title: '点赞失败', description: formatDanmakuError(result.error) })
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       appendLog(`🔴 点赞出错：${msg}`)
+      showToast({ type: 'error', title: '点赞出错', description: msg })
     } finally {
       liking.value = false
     }
@@ -236,6 +291,7 @@ export function NormalSendTab({ inputOnly = false }: { inputOnly?: boolean }) {
           data-chatterbox-lite-drag-surface='true'
         >
           <EmoteSelector side='top' />
+          <QueueStatusBadge />
         </div>
         <div class='flex shrink-0 items-center gap-1'>
           <SettingsPopoverButton side='top' />

@@ -4,11 +4,18 @@ import { useSignal } from '@preact/signals'
 import type { BilibiliEmoticon } from '../types'
 
 import { cn } from '../lib/cn'
-import { getPinnedEmoticons, getVisibleEmoticonPackages, togglePinnedEmoticon } from '../lib/emote-picker'
+import {
+  addRecentEmoticon,
+  getPinnedEmoticons,
+  getRecentEmoticons,
+  getVisibleEmoticonPackages,
+  togglePinnedEmoticon,
+} from '../lib/emote-picker'
 import { formatLockedEmoticonReject, isLockedEmoticon } from '../lib/emoticon'
 import { appendLog } from '../lib/log'
 import { getRuntimeAdapter } from '../lib/runtime'
-import { cachedEmoticonPackages, pinnedEmoticonUniques } from '../lib/store'
+import { cachedEmoticonPackages, pinnedEmoticonUniques, recentEmoticonUniques } from '../lib/store'
+import { showToast } from '../lib/toast'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, type PopoverSide, PopoverTrigger } from './ui/popover'
 
@@ -26,21 +33,30 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
   const packages = cachedEmoticonPackages.value
   const visiblePackages = getVisibleEmoticonPackages(packages)
   const pinnedEmoticons = getPinnedEmoticons(packages, pinnedEmoticonUniques.value)
+  const recentEmoticons = getRecentEmoticons(packages, recentEmoticonUniques.value, pinnedEmoticonUniques.value)
 
   const handleSend = async (unique: string) => {
     open.value = false
 
     if (isLockedEmoticon(unique)) {
       appendLog(formatLockedEmoticonReject(unique, '手动表情'))
+      showToast({ type: 'warning', title: '表情暂不可用', description: unique })
       return
     }
 
     try {
       const result = await getRuntimeAdapter().sendDanmaku(unique)
       appendLog(result, '手动表情', unique)
+      if (result.success) {
+        recentEmoticonUniques.value = addRecentEmoticon(recentEmoticonUniques.value, unique)
+        showToast({ type: 'success', title: '表情已发送', description: unique })
+      } else {
+        showToast({ type: 'error', title: '表情发送失败', description: unique })
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       appendLog(`🔴 发送出错：${msg}`)
+      showToast({ type: 'error', title: '表情发送出错', description: msg })
     }
   }
 
@@ -48,11 +64,12 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
     try {
       await navigator.clipboard.writeText(unique)
     } catch {
-      alert(`复制失败，请手动复制：${unique}`)
+      showToast({ type: 'error', title: '复制失败', description: unique })
       return
     }
 
     copiedId.value = unique
+    showToast({ type: 'success', title: '已复制表情', description: unique })
     setTimeout(() => {
       if (copiedId.peek() === unique) copiedId.value = null
     }, 1500)
@@ -72,6 +89,7 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
         appendLog(`⚠️ 表情数据加载失败：${msg}`)
+        showToast({ type: 'error', title: '表情加载失败', description: msg })
       }
     })()
   }
@@ -128,7 +146,7 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
           {isLocked && (
             <span
               class='pointer-events-none absolute top-px right-px rounded-sm p-0.5 text-[9px] text-white leading-none'
-              style={{ background: emo.unlock_show_color || 'rgba(0, 0, 0, 0.6)' }}
+              style={{ background: emo.unlock_show_color || 'var(--chatterbox-lite-lock-badge)' }}
             >
               {lockText || '锁'}
             </span>
@@ -175,6 +193,16 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
                     <span class='ml-2 font-normal'>({pinnedEmoticons.length})</span>
                   </div>
                   <div class={EMOTE_GRID_CLASS}>{pinnedEmoticons.map(renderEmote)}</div>
+                </div>
+              )}
+
+              {recentEmoticons.length > 0 && (
+                <div class='mb-3 border-[color:var(--chatterbox-lite-acrylic-divider)] border-b border-solid pb-3'>
+                  <div class='mb-1 font-bold text-[11px] text-ga6'>
+                    最近表情
+                    <span class='ml-2 font-normal'>({recentEmoticons.length})</span>
+                  </div>
+                  <div class={EMOTE_GRID_CLASS}>{recentEmoticons.map(renderEmote)}</div>
                 </div>
               )}
 

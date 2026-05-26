@@ -1,3 +1,5 @@
+import { signal } from '@preact/signals'
+
 import type { SendDanmakuResult } from '../types'
 
 import { sendDanmaku } from './api'
@@ -16,24 +18,44 @@ interface QueueItem {
   reject: (err: unknown) => void
 }
 
+export interface SendQueueStatus {
+  depth: number
+  processing: boolean
+  waitingUntil: number | null
+}
+
 const HARD_MIN_GAP_MS = 1010
 
 const queue: QueueItem[] = []
 let processing = false
 let lastSendCompletedAt = 0
+export const sendQueueStatus = signal<SendQueueStatus>({ depth: 0, processing: false, waitingUntil: null })
+
+function publishQueueStatus(waitingUntil = sendQueueStatus.peek().waitingUntil): void {
+  sendQueueStatus.value = {
+    depth: queue.length,
+    processing,
+    waitingUntil,
+  }
+}
 
 async function processQueue(): Promise<void> {
   if (processing) return
   processing = true
+  publishQueueStatus(null)
   try {
     while (queue.length > 0) {
       const item = queue.shift()
       if (!item) break
+      publishQueueStatus(null)
 
       if (lastSendCompletedAt > 0) {
         const sinceLast = Date.now() - lastSendCompletedAt
         if (sinceLast < HARD_MIN_GAP_MS) {
-          await new Promise(r => setTimeout(r, HARD_MIN_GAP_MS - sinceLast))
+          const waitMs = HARD_MIN_GAP_MS - sinceLast
+          publishQueueStatus(Date.now() + waitMs)
+          await new Promise(r => setTimeout(r, waitMs))
+          publishQueueStatus(null)
         }
       }
 
@@ -48,6 +70,7 @@ async function processQueue(): Promise<void> {
     }
   } finally {
     processing = false
+    publishQueueStatus(null)
   }
 }
 
@@ -59,6 +82,7 @@ export function enqueueDanmaku(
 ): Promise<SendDanmakuResult> {
   return new Promise((resolve, reject) => {
     queue.push({ message, roomId, csrfToken, resolve, reject })
+    publishQueueStatus()
     void processQueue()
   })
 }

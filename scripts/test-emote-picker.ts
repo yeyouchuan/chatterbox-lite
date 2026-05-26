@@ -1,6 +1,13 @@
 import type { BilibiliEmoticonPackage } from '../src/types'
 
-import { getPinnedEmoticons, getVisibleEmoticonPackages, togglePinnedEmoticon } from '../src/lib/emote-picker'
+import {
+  addRecentEmoticon,
+  getPinnedEmoticons,
+  getRecentEmoticons,
+  getVisibleEmoticonPackages,
+  RECENT_EMOTE_LIMIT,
+  togglePinnedEmoticon,
+} from '../src/lib/emote-picker'
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
@@ -43,5 +50,20 @@ assert(withPinned[0] === 'guard_a' && withPinned[1] === 'room_a', 'newly pinned 
 
 const withoutPinned = togglePinnedEmoticon(withPinned, 'guard_a')
 assert(withoutPinned.length === 1 && withoutPinned[0] === 'room_a', 'existing pinned emotes should be removed')
+
+const recent = getRecentEmoticons(packages, ['room_b', 'guard_a', 'room_a', 'missing'], ['guard_a'])
+assert(recent.length === 2, 'recent emotes should skip pinned and missing emotes')
+assert(recent[0]?.emoticon_unique === 'room_b', 'recent emotes should preserve recent order')
+assert(recent[1]?.emoticon_unique === 'room_a', 'recent emotes should include visible unpinned emotes')
+
+const nextRecent = addRecentEmoticon(['room_a', 'room_b'], 'room_a')
+assert(nextRecent.join('|') === 'room_a|room_b', 'recent emotes should dedupe and move the latest to the top')
+assert(
+  addRecentEmoticon(
+    Array.from({ length: RECENT_EMOTE_LIMIT }, (_, index) => `e${index}`),
+    'new'
+  ).length === RECENT_EMOTE_LIMIT,
+  'recent emotes should be capped'
+)
 
 console.log('Emote picker tests passed')

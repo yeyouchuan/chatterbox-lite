@@ -15,15 +15,23 @@ const normalSendSource = readFileSync('src/components/normal-send-tab.tsx', 'utf
 const settingsButtonSource = readFileSync('src/components/settings-popover-button.tsx', 'utf8')
 const directSource = readFileSync('src/lib/danmaku-direct.ts', 'utf8')
 const mainSource = readFileSync('src/main.tsx', 'utf8')
+const themeSource = readFileSync('src/lib/theme.ts', 'utf8')
 const stylesSource = readFileSync('src/styles.css', 'utf8')
 
-assert(mainSource.includes('data-chatterbox-lite-theme'), 'host should expose the resolved plugin theme')
+assert(mainSource.includes("import { syncHostTheme } from './lib/theme'"), 'main entry should delegate theme sync')
+assert(themeSource.includes('data-chatterbox-lite-theme'), 'host should expose the resolved plugin theme')
 assert(
-  mainSource.includes("matchMedia('(prefers-color-scheme: dark)'"),
+  themeSource.includes("matchMedia('(prefers-color-scheme: dark)'"),
   'theme sync should fall back to the system dark preference'
 )
-assert(mainSource.includes('MutationObserver'), 'theme sync should react to host page theme changes')
-assert(mainSource.includes("'lab-style'"), 'theme sync should inspect Bilibili theme attributes')
+assert(themeSource.includes('MutationObserver'), 'theme sync should react to host page theme changes')
+assert(themeSource.includes("'lab-style'"), 'theme sync should inspect Bilibili theme attributes')
+assert(themeSource.includes('parseCssColor'), 'theme parsing should live in a focused helper')
+assert(
+  themeSource.includes("replace(/\\s*\\/\\s*/, ' / ')"),
+  'theme parsing should support modern rgb slash alpha syntax'
+)
+assert(themeSource.includes('return () =>'), 'theme sync should expose cleanup')
 assert(
   configuratorSource.includes("setProperty('--chatterbox-lite-dialog-width'"),
   'portal root should receive dialog width CSS variable'
@@ -123,6 +131,12 @@ assert(
 assert(stylesSource.includes(":host([data-chatterbox-lite-theme='dark'])"), 'styles should define a dark acrylic theme')
 assert(stylesSource.includes('--chatterbox-lite-placeholder'), 'styles should define a placeholder text token')
 assert(stylesSource.includes('--chatterbox-lite-active-control'), 'styles should define an active control token')
+assert(stylesSource.includes('--chatterbox-lite-status-success'), 'styles should define semantic success token')
+assert(stylesSource.includes('--chatterbox-lite-status-warning'), 'styles should define semantic warning token')
+assert(stylesSource.includes('--chatterbox-lite-status-danger'), 'styles should define semantic danger token')
+assert(stylesSource.includes('--chatterbox-lite-audio-active'), 'styles should define semantic audio active token')
+assert(stylesSource.includes('--chatterbox-lite-toast-surface'), 'styles should define toast surface token')
+assert(stylesSource.includes('--chatterbox-lite-direct-action'), 'styles should define direct danmaku action token')
 assert(
   stylesSource.includes('--chatterbox-lite-acrylic-panel-gradient'),
   'styles should define a subtle panel gradient token'
@@ -169,6 +183,15 @@ assert(!normalSendSource.includes('>x30</span>'), 'live like button should not r
 assert(normalSendSource.includes("className='w-6 px-0"), 'live like button should match the settings icon size')
 assert(normalSendSource.includes('<SettingsPopoverButton'), 'send panel should render the settings action next to like')
 assert(settingsButtonSource.includes('GearSixIcon'), 'settings action should use a recognizable settings icon')
+assert(
+  audioOnlySource.includes('var(--chatterbox-lite-audio-active)'),
+  'audio-only button should use semantic audio tokens'
+)
+assert(!audioOnlySource.includes('#FF6699'), 'audio-only button should not hardcode the bilibili pink')
+assert(
+  directSource.includes('var(--chatterbox-lite-direct-action'),
+  'direct danmaku buttons should use semantic tokens'
+)
 assert(!configuratorSource.includes('XIcon'), 'main dialog should not render a close button')
 assert(configuratorSource.includes('const startDrag'), 'main dialog should keep a drag handler without the title row')
 assert(configuratorSource.includes("title='拖动移动窗口'"), 'main dialog should expose a non-title drag surface')

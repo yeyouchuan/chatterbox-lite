@@ -7,6 +7,7 @@ import { applyReplacements } from './replacement'
 import { addSendHistoryEntry } from './send-history'
 import { enqueueDanmaku, SendPriority } from './send-queue'
 import { danmakuDirectEnabled, dialogOpen, fasongText, sendHistory } from './store'
+import { showToast } from './toast'
 
 const MARKER = 'chatterbox-lite-dm-direct'
 const STYLE_ID = 'chatterbox-lite-dm-direct-style'
@@ -32,12 +33,12 @@ html.chatterbox-lite-dm-direct-always .${MARKER} {
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  border: 1px solid rgba(255,255,255,.24);
+  border: 1px solid var(--chatterbox-lite-direct-action-border, rgba(255,255,255,.24));
   border-radius: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,.36);
+  background: var(--chatterbox-lite-direct-action, rgba(0,0,0,.36));
   color: inherit;
   font-size: 11px;
   line-height: 1;
@@ -101,6 +102,7 @@ function handleCopy(message: string): void {
   fasongText.value = message
   dialogOpen.value = true
   appendLog(`复制弹幕：${message}`)
+  showToast({ type: 'info', title: '已复制到发送框', description: message })
 }
 
 async function handleRepeat(message: string): Promise<void> {
@@ -109,6 +111,7 @@ async function handleRepeat(message: string): Promise<void> {
     const csrfToken = getCsrfToken()
     if (!csrfToken) {
       appendLog('❌ 未找到登录信息，请先登录 Bilibili')
+      showToast({ type: 'error', title: '未找到登录信息', description: '请先登录 Bilibili' })
       return
     }
 
@@ -116,9 +119,15 @@ async function handleRepeat(message: string): Promise<void> {
     const result = await enqueueDanmaku(processed, roomId, csrfToken, SendPriority.MANUAL)
     sendHistory.value = addSendHistoryEntry(sendHistory.value, message)
     appendLog(result, '+1', message !== processed ? `${message} → ${processed}` : processed)
+    showToast({
+      type: result.success ? 'success' : 'error',
+      title: result.success ? '+1 已发送' : '+1 发送失败',
+      description: message,
+    })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     appendLog(`🔴 +1 出错：${msg}`)
+    showToast({ type: 'error', title: '+1 出错', description: msg })
   }
 }
 

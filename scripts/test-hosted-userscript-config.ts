@@ -7,8 +7,7 @@ function assert(condition: unknown, message: string): asserts condition {
 const viteConfig = readFileSync('vite.config.ts', 'utf8')
 const releaseWorkflow = readFileSync('.github/workflows/release.yml', 'utf8')
 const readme = readFileSync('README.md', 'utf8')
-const githubPagesBaseUrl =
-  'USERSCRIPT_BASE_URL: https://$' + '{{ github.repository_owner }}.github.io/$' + '{{ github.event.repository.name }}'
+const rawBaseUrl = 'USERSCRIPT_BASE_URL: https://raw.githubusercontent.com/$' + '{{ github.repository }}/gh-pages'
 
 assert(viteConfig.includes('USERSCRIPT_BASE_URL'), 'vite config should accept a hosted userscript base URL')
 assert(viteConfig.includes('downloadURL'), 'vite config should emit @downloadURL for hosted builds')
@@ -27,9 +26,11 @@ assert(
   'GitHub Pages workflow should install Bun directly and put it on PATH'
 )
 assert(
-  releaseWorkflow.includes(githubPagesBaseUrl),
-  'GitHub Pages workflow should publish builds with a stable hosted userscript URL'
+  releaseWorkflow.includes(rawBaseUrl),
+  'GitHub Pages workflow should publish builds with the raw gh-pages userscript URL'
 )
 assert(readme.includes('Hosted install'), 'README should document the hosted install flow')
+assert(readme.includes('raw.githubusercontent.com'), 'README should document raw GitHub userscript URLs')
+assert(readme.includes('canonical update path'), 'README should explain that raw URLs are the update source')
 
 console.log('Hosted userscript config tests passed')

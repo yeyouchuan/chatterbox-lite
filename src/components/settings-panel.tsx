@@ -44,9 +44,17 @@ function SettingCheckbox({
 export function SettingsPanel() {
   const autoSeekDelayDelta = autoSeekCurrentBufferLen.value - autoSeekBufferThreshold.value
   const autoSeekDelayColor =
-    autoSeekCurrentBufferLen.value < 0.2 ? '#f44' : autoSeekDelayDelta > 1 ? '#e8a200' : '#36a185'
+    autoSeekCurrentBufferLen.value < 0.2
+      ? 'var(--chatterbox-lite-status-danger)'
+      : autoSeekDelayDelta > 1
+        ? 'var(--chatterbox-lite-status-warning)'
+        : 'var(--chatterbox-lite-status-success)'
   const autoSeekRateColor =
-    Math.abs(autoSeekCurrentRate.value - 1) < 0.005 ? '#666' : autoSeekCurrentRate.value > 1 ? '#e8a200' : '#f44'
+    Math.abs(autoSeekCurrentRate.value - 1) < 0.005
+      ? 'var(--chatterbox-lite-status-neutral)'
+      : autoSeekCurrentRate.value > 1
+        ? 'var(--chatterbox-lite-status-warning)'
+        : 'var(--chatterbox-lite-status-danger)'
   const updateAutoSeekEnabled = (value: boolean) => {
     autoSeekEnabled.value = value
   }

@@ -39,6 +39,7 @@ export const showReplacementPanel = gmSignal('showReplacementPanel', true)
 export const showLogPanel = gmSignal('showLogPanel', true)
 export const blockedRetryEnabled = gmSignal('blockedRetryEnabled', false)
 export const pinnedEmoticonUniques = gmSignal<string[]>('pinnedEmoticonUniques', [])
+export const recentEmoticonUniques = gmSignal<string[]>('recentEmoticonUniques', [])
 export const danmakuDirectEnabled = gmSignal('danmakuDirectEnabled', true)
 export const sendHistory = gmSignal<string[]>('sendHistory', [])
 
