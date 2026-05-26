@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from 'preact'
 
 import { cn } from '../../lib/cn'
 
-export type ButtonVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link'
+export type ButtonVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'active' | 'ghost' | 'link'
 export type ButtonSize = 'sm' | 'default' | 'lg' | 'icon'
 
 // `class` is omitted to forbid the React-style `class={...}` form (consumers
@@ -49,6 +49,8 @@ const VARIANT_CLASS: Record<ButtonVariant, string> = {
   destructive: 'bg-transparent text-danger border border-solid border-danger',
   outline:
     'border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid bg-acrylic-control text-inherit shadow-none backdrop-blur-md',
+  active:
+    'border border-[color:var(--chatterbox-lite-active-control-border)] border-solid bg-acrylic-active text-[color:var(--chatterbox-lite-active-control-text)] shadow-[inset_0_1px_0_rgba(255,255,255,.14)] backdrop-blur-md',
   ghost: 'bg-transparent text-inherit border border-solid border-transparent',
   link: 'border border-transparent border-solid bg-transparent p-0 text-link underline underline-offset-2 min-h-[auto]',
 }

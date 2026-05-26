@@ -14,8 +14,16 @@ const audioOnlySource = readFileSync('src/components/audio-only-button.tsx', 'ut
 const normalSendSource = readFileSync('src/components/normal-send-tab.tsx', 'utf8')
 const settingsButtonSource = readFileSync('src/components/settings-popover-button.tsx', 'utf8')
 const directSource = readFileSync('src/lib/danmaku-direct.ts', 'utf8')
+const mainSource = readFileSync('src/main.tsx', 'utf8')
 const stylesSource = readFileSync('src/styles.css', 'utf8')
 
+assert(mainSource.includes('data-chatterbox-lite-theme'), 'host should expose the resolved plugin theme')
+assert(
+  mainSource.includes("matchMedia('(prefers-color-scheme: dark)'"),
+  'theme sync should fall back to the system dark preference'
+)
+assert(mainSource.includes('MutationObserver'), 'theme sync should react to host page theme changes')
+assert(mainSource.includes("'lab-style'"), 'theme sync should inspect Bilibili theme attributes')
 assert(
   configuratorSource.includes("setProperty('--chatterbox-lite-dialog-width'"),
   'portal root should receive dialog width CSS variable'
@@ -28,6 +36,10 @@ assert(configuratorSource.includes('bg-acrylic-panel'), 'main dialog should use 
 assert(
   configuratorSource.includes('border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)]'),
   'main dialog should weaken the bottom border'
+)
+assert(
+  configuratorSource.includes('[background-image:var(--chatterbox-lite-acrylic-panel-gradient)]'),
+  'main dialog should add a subtle acrylic gradient'
 )
 assert(configuratorSource.includes("addEventListener('resize'"), 'dialog should re-clamp on viewport resize')
 assert(
@@ -65,6 +77,8 @@ for (const [name, source] of [
 assert(normalSendSource.includes('tabular-nums'), 'send character count should use stable tabular numbers')
 assert(buttonSource.includes('gap-1.5 rounded-lg'), 'buttons should use the softer control radius')
 assert(buttonSource.includes('bg-acrylic-control'), 'secondary buttons should use acrylic control surfaces')
+assert(buttonSource.includes("'active'"), 'buttons should provide an internal active surface variant')
+assert(buttonSource.includes('bg-acrylic-active'), 'active buttons should use a subtle acrylic active surface')
 assert(buttonSource.includes('bg-brand text-white'), 'primary buttons should keep a blue branded fill')
 assert(
   textareaSource.includes('bg-acrylic-control text-inherit backdrop-blur-md'),
@@ -72,13 +86,25 @@ assert(
 )
 assert(textareaSource.includes('px-2 py-1.5'), 'textareas should keep content comfortably away from the border')
 assert(
+  textareaSource.includes('placeholder:text-[color:var(--chatterbox-lite-placeholder)]'),
+  'textareas should use the dedicated lighter placeholder token'
+)
+assert(
   inputSource.includes('bg-acrylic-control text-inherit backdrop-blur-md'),
   'inputs should use acrylic control surfaces'
+)
+assert(
+  inputSource.includes('placeholder:text-[color:var(--chatterbox-lite-placeholder)]'),
+  'inputs should use the dedicated lighter placeholder token'
 )
 assert(popoverSource.includes('bg-acrylic-popover'), 'popovers should use the acrylic popover surface')
 assert(
   popoverSource.includes('border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)]'),
   'popovers should weaken the bottom border'
+)
+assert(
+  popoverSource.includes('[background-image:var(--chatterbox-lite-acrylic-popover-gradient)]'),
+  'popovers should add a subtle acrylic gradient'
 )
 assert(popoverSource.includes('overflow-visible'), 'popover content should not clip focus rings')
 assert(!popoverSource.includes('pointer-events-auto overflow-hidden'), 'popover content should not clip focus rings')
@@ -94,6 +120,17 @@ assert(
   stylesSource.includes('--Ga6: var(--chatterbox-lite-muted)'),
   'styles should override inherited Bilibili muted tokens'
 )
+assert(stylesSource.includes(":host([data-chatterbox-lite-theme='dark'])"), 'styles should define a dark acrylic theme')
+assert(stylesSource.includes('--chatterbox-lite-placeholder'), 'styles should define a placeholder text token')
+assert(stylesSource.includes('--chatterbox-lite-active-control'), 'styles should define an active control token')
+assert(
+  stylesSource.includes('--chatterbox-lite-acrylic-panel-gradient'),
+  'styles should define a subtle panel gradient token'
+)
+assert(
+  stylesSource.includes('--chatterbox-lite-acrylic-popover-gradient'),
+  'styles should define a subtle popover gradient token'
+)
 assert(stylesSource.includes('--chatterbox-lite-acrylic-panel'), 'styles should define the acrylic panel token')
 assert(stylesSource.includes('--chatterbox-lite-acrylic-control'), 'styles should define the acrylic control token')
 assert(stylesSource.includes('--color-brand: #479fd1'), 'styles should use the requested Arclight blue brand color')
@@ -103,8 +140,8 @@ assert(
 )
 assert(popoverSource.includes('text-[color:var(--chatterbox-lite-text)]'), 'popovers should force readable plugin text')
 assert(
-  settingsButtonSource.includes("variant={settingsPanelOpen.value ? 'default' : 'outline'}"),
-  'settings button should show an active color while its popover is open'
+  settingsButtonSource.includes("variant={settingsPanelOpen.value ? 'active' : 'outline'}"),
+  'settings button should show a subtle active color while its popover is open'
 )
 assert(
   normalSendSource.includes('text-[color:var(--chatterbox-lite-muted)]'),

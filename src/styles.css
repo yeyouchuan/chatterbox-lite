@@ -4,14 +4,29 @@
 @source './lib';
 
 :host {
+  color-scheme: light;
   --chatterbox-lite-text: #172033;
   --chatterbox-lite-muted: #64748b;
   --chatterbox-lite-subtle: #8da0b5;
+  --chatterbox-lite-placeholder: rgba(120, 142, 168, 0.48);
   --chatterbox-lite-control-icon: #5b6f86;
+  --chatterbox-lite-active-control: rgba(71, 159, 209, 0.16);
+  --chatterbox-lite-active-control-border: rgba(71, 159, 209, 0.34);
+  --chatterbox-lite-active-control-text: #0b477a;
   --chatterbox-lite-pin-active: #5f7890;
   --chatterbox-lite-pin-border: rgba(95, 120, 144, 0.46);
   --chatterbox-lite-acrylic-panel: rgba(242, 248, 255, 0.82);
+  --chatterbox-lite-acrylic-panel-gradient: linear-gradient(
+    180deg,
+    rgba(248, 253, 255, 0.46),
+    rgba(229, 242, 253, 0.2)
+  );
   --chatterbox-lite-acrylic-popover: rgba(244, 249, 255, 0.88);
+  --chatterbox-lite-acrylic-popover-gradient: linear-gradient(
+    180deg,
+    rgba(250, 253, 255, 0.5),
+    rgba(232, 243, 253, 0.22)
+  );
   --chatterbox-lite-acrylic-control: rgba(255, 255, 255, 0.48);
   --chatterbox-lite-acrylic-control-strong: rgba(255, 255, 255, 0.66);
   --chatterbox-lite-acrylic-border: rgba(71, 159, 209, 0.26);
@@ -26,6 +41,35 @@
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+:host([data-chatterbox-lite-theme='dark']) {
+  color-scheme: dark;
+  --chatterbox-lite-text: #dbe8ee;
+  --chatterbox-lite-muted: #a7b6c0;
+  --chatterbox-lite-subtle: #798993;
+  --chatterbox-lite-placeholder: rgba(154, 170, 181, 0.44);
+  --chatterbox-lite-control-icon: #c7d4dc;
+  --chatterbox-lite-active-control: rgba(71, 159, 209, 0.2);
+  --chatterbox-lite-active-control-border: rgba(111, 184, 224, 0.44);
+  --chatterbox-lite-active-control-text: #d7effc;
+  --chatterbox-lite-pin-active: #aebdc6;
+  --chatterbox-lite-pin-border: rgba(174, 189, 198, 0.42);
+  --chatterbox-lite-acrylic-panel: rgba(28, 35, 46, 0.84);
+  --chatterbox-lite-acrylic-panel-gradient: linear-gradient(180deg, rgba(42, 50, 64, 0.52), rgba(25, 38, 43, 0.28));
+  --chatterbox-lite-acrylic-popover: rgba(31, 39, 50, 0.88);
+  --chatterbox-lite-acrylic-popover-gradient: linear-gradient(180deg, rgba(45, 54, 68, 0.5), rgba(27, 40, 45, 0.3));
+  --chatterbox-lite-acrylic-control: rgba(255, 255, 255, 0.08);
+  --chatterbox-lite-acrylic-control-strong: rgba(255, 255, 255, 0.13);
+  --chatterbox-lite-acrylic-border: rgba(185, 211, 226, 0.2);
+  --chatterbox-lite-acrylic-border-bottom: rgba(185, 211, 226, 0.06);
+  --chatterbox-lite-acrylic-divider: rgba(185, 211, 226, 0.14);
+  --chatterbox-lite-acrylic-shadow: 0 26px 68px rgba(0, 0, 0, 0.36), 0 4px 18px rgba(0, 0, 0, 0.2);
+  --chatterbox-lite-acrylic-popover-shadow: 0 22px 48px rgba(0, 0, 0, 0.34), 0 2px 12px rgba(0, 0, 0, 0.18);
+  --Ga5: var(--chatterbox-lite-subtle);
+  --Ga6: var(--chatterbox-lite-muted);
+  --Ga7: var(--chatterbox-lite-muted);
+  --Ga10: var(--chatterbox-lite-text);
 }
 
 html,
@@ -68,6 +112,7 @@ summary,
   --color-acrylic-popover: var(--chatterbox-lite-acrylic-popover);
   --color-acrylic-control: var(--chatterbox-lite-acrylic-control);
   --color-acrylic-control-strong: var(--chatterbox-lite-acrylic-control-strong);
+  --color-acrylic-active: var(--chatterbox-lite-active-control);
 
   --color-brand: #479fd1;
   --color-danger: #c83f46;

@@ -15,7 +15,7 @@ export function SettingsPopoverButton({ side = 'top', align = 'end' }: { side?: 
     >
       <PopoverTrigger>
         <Button
-          variant={settingsPanelOpen.value ? 'default' : 'outline'}
+          variant={settingsPanelOpen.value ? 'active' : 'outline'}
           size='sm'
           className='w-6 px-0'
           aria-label='打开设置'

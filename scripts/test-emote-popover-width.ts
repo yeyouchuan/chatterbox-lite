@@ -20,6 +20,14 @@ assert(!source.includes('grid grid-cols-6'), 'emote grid should not stay locked 
 assert(source.includes('size-[52px]'), 'emote buttons should be compact enough for six columns')
 assert(source.includes('[scrollbar-width:thin]'), 'emote popover should use a thinner scrollbar')
 assert(source.includes('[&::-webkit-scrollbar]:w-1.5'), 'emote popover should thin WebKit scrollbars')
+assert(
+  source.includes("variant={open.value ? 'active' : 'outline'}"),
+  'open emote button should use the subtle active surface instead of primary blue'
+)
+assert(
+  !source.includes("variant={open.value ? 'default' : 'outline'}"),
+  'open emote button should not use the full brand primary state'
+)
 assert(source.includes('--chatterbox-lite-pin-active'), 'pinned emote buttons should use a muted pin color')
 assert(
   !source.includes("isPinned ? 'border-brand text-brand'"),

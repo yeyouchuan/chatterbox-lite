@@ -22,7 +22,7 @@ export function Input({ type = 'text', disabled, className, ...props }: InputPro
         'rounded-lg border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid',
         'bg-acrylic-control text-inherit backdrop-blur-md',
         'min-h-5 leading-none outline-none',
-        'placeholder:text-ga5',
+        'placeholder:text-[color:var(--chatterbox-lite-placeholder)]',
         'cursor-text disabled:cursor-not-allowed disabled:opacity-60',
         'shadow-none',
         'transition-[border-color,outline-color,box-shadow] duration-150 ease-out',

@@ -153,7 +153,7 @@ export function EmoteSelector({ side = 'top' }: { side?: PopoverSide }) {
   return (
     <Popover open={open.value} onOpenChange={handleOpenChange}>
       <PopoverTrigger>
-        <Button variant={open.value ? 'default' : 'outline'} size='sm' title='表情' aria-label='表情'>
+        <Button variant={open.value ? 'active' : 'outline'} size='sm' title='表情' aria-label='表情'>
           <SmileyIcon weight='bold' aria-hidden='true' />
         </Button>
       </PopoverTrigger>

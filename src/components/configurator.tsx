@@ -139,6 +139,7 @@ export function Configurator() {
         'max-h-[calc(100vh-112px)] overflow-y-auto',
         'rounded-xl border border-[color:var(--chatterbox-lite-acrylic-border)] border-b-[color:var(--chatterbox-lite-acrylic-border-bottom)] border-solid',
         'bg-acrylic-panel text-[13px] text-[color:var(--chatterbox-lite-text)] shadow-[var(--chatterbox-lite-acrylic-shadow)]',
+        '[background-image:var(--chatterbox-lite-acrylic-panel-gradient)]',
         'backdrop-blur-xl backdrop-saturate-150',
         !visible && 'hidden'
       )}

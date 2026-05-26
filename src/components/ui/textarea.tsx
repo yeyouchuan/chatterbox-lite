@@ -28,7 +28,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         'rounded-lg border border-[color:var(--chatterbox-lite-acrylic-border)] border-solid',
         'bg-acrylic-control text-inherit backdrop-blur-md',
         'leading-[1.4] outline-none',
-        'placeholder:text-ga5',
+        'placeholder:text-[color:var(--chatterbox-lite-placeholder)]',
         'min-h-10 resize-y',
         'cursor-text disabled:cursor-not-allowed disabled:opacity-60',
         'shadow-none',
